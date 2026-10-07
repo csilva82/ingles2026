@@ -46,24 +46,27 @@
   </section>
 
   <div>
-  
+  <!-- Botão corrigido -->
+    <button id="btnAudio1" onclick="alternarAudio()">▶ Play / Pausar</button>
 
-  <!-- Seu botão personalizado -->
-    <button id="btnAudio" onclick="alternarAudio()">▶ Play</button>
-    <!-- O iframe carrega a pré-visualização oficial do Drive de forma oculta -->
-    <!-- Substitua ID_DO_SEU_ARQUIVO pelo ID real do arquivo -->
-    <iframe id="playerDrive" 
-            src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing" 
-            width="0" 
-            height="0" 
-            style="display:none; visibility:hidden;">
-    </iframe>
+    <!-- Tag de áudio com o link direto -->
+    <audio id="meuAudio" src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing"></audio>
+
   </div>
 </div>
     <script>
-        // Nota: Devido a restrições de segurança de origens diferentes (CORS),
-        // o controle 100% via JavaScript em iframes externos pode ser limitado em alguns navegadores.
-        // Se o erro persistir, a melhor alternativa é usar a tag <audio> padrão exibindo os controles:
+        // A função agora tem exatamente o mesmo nome do onclick do botão
+        function alternarAudio() {
+            var audio = document.getElementById("meuAudio");
+            
+            if (audio.paused) {
+                audio.play().catch(function(error) {
+                    console.log("Erro ao tocar o áudio: ", error);
+                });
+            } else {
+                audio.pause();
+            }
+        }
     </script>
   
 
