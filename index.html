@@ -45,5 +45,26 @@
     </div>
   </section>
 </div>
+
+  <div>
+    <!-- Botão que o usuário vai clicar -->
+    <button onclick="controlarAudio()">▶ Play / Pausar</button>
+
+    <!-- Tag de áudio oculta com o seu link direto do Drive -->
+    <audio id="meuAudio" src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing"></audio>
+    </div>
+    <script>
+        // Função que controla a reprodução
+        function controlarAudio() {
+            var audio = document.getElementById("meuAudio");
+            
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+    </script>
+
 </body>
 </html>
