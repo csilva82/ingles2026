@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vocabulário</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ingles.css">
+</head>
+<body>
+<header class="top">
+  <div><h1>Vocabulário</h1><p class="sub">Palavras e expressões para o dia a dia e o trabalho.</p></div>
+  <div class="bar"><a class="tog" href="index.html">← Início</a><button class="tog" id="slow" aria-pressed="false">🐢 Voz lenta</button></div>
+</header>
+<div class="page"><div class="card" id="app"></div></div>
+<script src="ingles.js"></script>
+<script>
+// [inglês, português, frase de exemplo]
+const V=[
+{t:'Dia a dia',i:[
+['Running late','Atrasado(a)','Sorry, I\'m running late.'],
+['Pick up','Buscar / pegar','I\'ll pick you up at eight.'],
+['Hang out','Sair / passar tempo juntos','Let\'s hang out this weekend.'],
+['Catch up','Colocar o papo em dia','We should catch up soon.'],
+['Get along with','Se dar bem com','I get along with my neighbors.'],
+['Make it','Conseguir ir / dar conta','I can\'t make it tonight.'],
+['Figure out','Descobrir / entender','I can\'t figure it out.'],
+['Look for','Procurar','I\'m looking for my keys.'],
+['Grab a bite','Comer algo rápido','Let\'s grab a bite after work.'],
+['No worries','Sem problema','No worries, it happens.'],
+['Take care','Se cuide','See you soon, take care!'],
+['What\'s up?','E aí? / O que houve?','Hey, what\'s up?']]},
+{t:'Trabalho',i:[
+['Deadline','Prazo','The deadline is Friday.'],
+['Schedule','Agenda / programar','Let me check my schedule.'],
+['Meeting','Reunião','I have a meeting at ten.'],
+['Coworker','Colega de trabalho','My coworker is on vacation.'],
+['Manager','Gerente / chefe','I\'ll ask my manager.'],
+['Task','Tarefa','This task is almost done.'],
+['Follow up','Dar retorno / acompanhar','I\'ll follow up tomorrow.'],
+['Workload','Carga de trabalho','My workload is heavy this week.'],
+['Day off','Dia de folga','Tomorrow is my day off.'],
+['Raise','Aumento de salário','She asked for a raise.'],
+['I\'m on it','Já estou cuidando disso','Got it, I\'m on it.'],
+['Reach out','Entrar em contato','Feel free to reach out.']]},
+{t:'Reuniões e e-mail',i:[
+['Agenda','Pauta','Let\'s go through the agenda.'],
+['Attach','Anexar','I attached the report.'],
+['Best regards','Atenciosamente','Thanks again. Best regards.'],
+['Reschedule','Remarcar','Can we reschedule for Monday?'],
+['Update','Atualização / atualizar','Here is a quick update.'],
+['Bring up','Levantar um assunto','I want to bring up one issue.'],
+['Wrap up','Encerrar / concluir','Let\'s wrap up the meeting.'],
+['Action items','Pendências / ações','Who owns these action items?'],
+['As soon as possible','O mais rápido possível','Please reply as soon as possible.'],
+['Looking forward to','Aguardo / ansioso por','I\'m looking forward to your reply.']]},
+{t:'Indústria',i:[
+['Production line','Linha de produção','The production line stopped.'],
+['Downtime','Tempo parado','We need to reduce downtime.'],
+['Maintenance','Manutenção','Maintenance is scheduled for Monday.'],
+['Sensor','Sensor','The sensor is not responding.'],
+['Robot arm','Braço robótico','The robot arm picks the part.'],
+['Lathe','Torno','The lathe is running.'],
+['Machining center','Centro de usinagem','The machining center is ready.'],
+['Troubleshoot','Diagnosticar e resolver um problema','I\'ll troubleshoot the connection.'],
+['Calibrate','Calibrar','We need to calibrate the camera.'],
+['Safety guard','Proteção de segurança','Close the safety guard.'],
+['Throughput','Produtividade / vazão','Throughput increased by ten percent.'],
+['Emergency stop','Parada de emergência','Press the emergency stop.']]}
+];
+let cat=0,mode='lista',known={},q=[],show=false;
+const h0=parseInt(location.hash.slice(1));if(h0>=0&&h0<V.length)cat=h0;
+try{known=JSON.parse(localStorage.getItem('voc')||'{}')}catch(e){}
+const sv=()=>{try{localStorage.setItem('voc',JSON.stringify(known))}catch(e){}};
+const build=()=>{q=shuf(V[cat].i.filter(x=>!known[x[0]]));show=false};
+
+function render(){
+  const C=V[cat],n=C.i.filter(x=>known[x[0]]).length;
+  let h=`<div class="bar">${V.map((c,k)=>`<button class="tog" data-c="${k}" aria-pressed="${k===cat}">${c.t}</button>`).join('')}</div>
+  <div class="bar"><button class="tog" data-m="lista" aria-pressed="${mode==='lista'}">Lista</button><button class="tog" data-m="cards" aria-pressed="${mode==='cards'}">Flashcards</button></div>
+  <p class="sub">${n} de ${C.i.length} já sei</p>`;
+  if(mode==='lista'){
+    h+=C.i.map((x,k)=>`<div class="row"><button class="sp" data-w="${k}" aria-label="Ouvir ${x[0]}">🔊</button><div style="flex:1"><div class="en">${x[0]}</div><div class="pt">${x[1]}</div><div class="pr">“${x[2]}” <button class="lnk" data-e="${k}">ouvir exemplo</button></div></div><label><input type="checkbox" data-k="${k}" ${known[x[0]]?'checked':''}> sei</label></div>`).join('');
+  }else if(!q.length){
+    h+=`<div class="big">Categoria concluída!</div><p class="sub">Você marcou todas como sabidas.</p><button class="btn" data-a="reset">Recomeçar categoria</button>`;
+  }else{
+    const x=q[0];
+    h+=`<div class="tip">Faltam ${q.length} nesta rodada.</div><div class="big">${x[0]} <button class="sp" data-f="w" aria-label="Ouvir">🔊</button></div><div class="pr">“${x[2]}” <button class="lnk" data-f="e">ouvir exemplo</button></div>`;
+    h+=show?`<div class="big">${x[1]}</div><div class="bar"><button class="btn" data-a="know">Já sei</button><button class="btn alt" data-a="again">Revisar depois</button></div>`
+           :`<div class="bar"><button class="btn" data-a="show">Mostrar tradução</button></div>`;
+  }
+  $('#app').innerHTML=h;
+}
+$('#app').onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset,C=V[cat];
+  if(d.c!==undefined){cat=+d.c;build();render()}
+  else if(d.m){mode=d.m;build();render();if(mode==='cards'&&q.length)say(q[0][0])}
+  else if(d.w!==undefined)say(C.i[d.w][0]);
+  else if(d.e!==undefined)say(C.i[d.e][2]);
+  else if(d.f)say(d.f==='w'?q[0][0]:q[0][2]);
+  else if(d.a==='show'){show=true;render()}
+  else if(d.a==='know'){known[q[0][0]]=1;sv();q.shift();show=false;render();if(q.length)say(q[0][0])}
+  else if(d.a==='again'){q.push(q.shift());show=false;render();say(q[0][0])}
+  else if(d.a==='reset'){C.i.forEach(x=>delete known[x[0]]);sv();build();render()}
+};
+$('#app').onchange=e=>{
+  const k=e.target.dataset.k;if(k===undefined)return;
+  const w=V[cat].i[k][0];if(e.target.checked)known[w]=1;else delete known[w];
+  sv();build();render();
+};
+build();render();
+</script>
+</body>
+</html>

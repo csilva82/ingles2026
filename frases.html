@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Montar frases</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ingles.css">
+</head>
+<body>
+<header class="top">
+  <div><h1>Montar frases</h1><p class="sub">Leia em português e digite a frase em inglês no tempo pedido.</p></div>
+  <div class="bar"><a class="tog" href="index.html">← Início</a><button class="tog" id="slow" aria-pressed="false">🐢 Voz lenta</button></div>
+</header>
+<div class="page"><div class="card">
+  <div class="bar" id="modes"></div>
+  <p class="sub" id="score"></p>
+  <div id="ex"></div>
+</div></div>
+<script src="ingles.js"></script>
+<script>
+// índice: 0 presente, 1 passado, 2 futuro (com will)
+const P=[
+{pt:['Eu trabalho na fábrica.','Eu trabalhei na fábrica.','Eu vou trabalhar na fábrica.'],en:['I work at the factory.','I worked at the factory.','I will work at the factory.']},
+{pt:['Ela vai de ônibus para o trabalho.','Ela foi de ônibus para o trabalho.','Ela vai de ônibus para o trabalho amanhã.'],en:['She goes to work by bus.','She went to work by bus.','She will go to work by bus tomorrow.']},
+{pt:['Nós almoçamos ao meio-dia.','Nós almoçamos ao meio-dia ontem.','Nós vamos almoçar ao meio-dia.'],en:['We eat lunch at noon.','We ate lunch at noon yesterday.','We will eat lunch at noon.']},
+{pt:['Ele compra um café toda manhã.','Ele comprou um café ontem de manhã.','Ele vai comprar um café amanhã de manhã.'],en:['He buys a coffee every morning.','He bought a coffee yesterday morning.','He will buy a coffee tomorrow morning.']},
+{pt:['Eles encontram o cliente na segunda.','Eles encontraram o cliente na segunda.','Eles vão encontrar o cliente na segunda.'],en:['They meet the client on Monday.','They met the client on Monday.','They will meet the client on Monday.']},
+{pt:['Eu escrevo o relatório.','Eu escrevi o relatório.','Eu vou escrever o relatório.'],en:['I write the report.','I wrote the report.','I will write the report.']},
+{pt:['Meu chefe fala inglês.','Meu chefe falou inglês na reunião.','Meu chefe vai falar inglês na reunião.'],en:['My boss speaks English.','My boss spoke English at the meeting.','My boss will speak English at the meeting.']},
+{pt:['Eu não tenho tempo.','Eu não tive tempo.','Eu não vou ter tempo.'],en:['I do not have time.|I don\'t have time.','I did not have time.|I didn\'t have time.','I will not have time.|I won\'t have time.']},
+{pt:['Você pega o ônibus?','Você pegou o ônibus?','Você vai pegar o ônibus?'],en:['Do you take the bus?','Did you take the bus?','Will you take the bus?']},
+{pt:['Ela gosta do novo emprego?','Ela gostou do novo emprego?','Ela vai gostar do novo emprego?'],en:['Does she like the new job?','Did she like the new job?','Will she like the new job?']},
+{pt:['A máquina para a cada hora.','A máquina parou ontem.','A máquina vai parar amanhã.'],en:['The machine stops every hour.','The machine stopped yesterday.','The machine will stop tomorrow.']},
+{pt:['Nós fazemos as peças aqui.','Nós fizemos as peças aqui.','Nós vamos fazer as peças aqui.'],en:['We make the parts here.','We made the parts here.','We will make the parts here.']},
+{pt:['Eu vejo meus amigos aos domingos.','Eu vi meus amigos no domingo.','Eu vou ver meus amigos no domingo.'],en:['I see my friends on Sundays.','I saw my friends on Sunday.','I will see my friends on Sunday.']}
+];
+const T=['Presente','Passado','Futuro'];
+const TIP=['Presente: com he/she/it o verbo ganha -s (works). Negativa e pergunta usam do/does.',
+ 'Passado: verbo no passado (worked, went, ate...). Negativa e pergunta usam did + verbo base.',
+ 'Futuro: use will + verbo base. Pergunta: Will + sujeito + verbo.'];
+let mode='misto',cur=null,t=0,ok=0,tot=0,streak=0,last=-1,done=false;
+const hm=location.hash.slice(1);
+if(['presente','passado','futuro','misto'].includes(hm))mode=hm;
+
+const norm=s=>s.toLowerCase().replace(/[’‘]/g,"'").replace(/won't/g,'will not').replace(/n't/g,' not')
+  .replace(/'m\b/g,' am').replace(/'ll\b/g,' will').replace(/'re\b/g,' are')
+  .replace(/[^a-z' ]/g,' ').replace(/\s+/g,' ').trim();
+
+function modes(){
+  $('#modes').innerHTML=['presente','passado','futuro','misto'].map(m=>`<button class="tog" data-m="${m}" aria-pressed="${m===mode}">${m[0].toUpperCase()+m.slice(1)}</button>`).join('');
+}
+function score(){$('#score').textContent=`Acertos: ${ok} de ${tot} · Sequência: ${streak}`}
+function next(){
+  let i;do{i=Math.floor(Math.random()*P.length)}while(i===last&&P.length>1);
+  last=i;cur=P[i];done=false;
+  t=mode==='misto'?Math.floor(Math.random()*3):['presente','passado','futuro'].indexOf(mode);
+  $('#ex').innerHTML=`<div class="sub">${T[t]}</div><div class="big">${cur.pt[t]}</div>
+  <div class="tip">${TIP[t]}</div>
+  <input type="text" id="in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Digite em inglês" aria-label="Sua frase em inglês">
+  <div class="bar" id="act"><button class="btn" data-a="chk">Conferir</button><button class="btn alt" data-a="hint">Dica</button><button class="btn alt" data-a="show">Ver resposta</button></div>
+  <div class="fb" id="fb" aria-live="polite"></div>`;
+  $('#in').focus();
+  $('#in').onkeydown=e=>{if(e.key==='Enter')done?next():check()};
+}
+const answers=()=>cur.en[t].split('|');
+function finish(good){
+  done=true;tot++;
+  if(good){ok++;streak++}else streak=0;
+  score();
+  $('#fb').innerHTML=(good?`<span style="color:var(--ok)">✔ Correto!</span> `:`<span style="color:var(--bad)">✘ Resposta:</span> `)+answers()[0];
+  $('#act').innerHTML=`<button class="btn" data-a="next">Próxima</button><button class="btn alt" data-a="say">🔊 Ouvir</button>`;
+  say(answers()[0]);
+}
+function check(){
+  const v=norm($('#in').value);if(!v)return;
+  if(answers().some(a=>norm(a)===v))finish(true);
+  else{
+    $('#fb').innerHTML=`<span style="color:var(--bad)">Ainda não. Confira o tempo verbal e tente de novo.</span>`;
+    const w=$('#in');w.focus();
+  }
+}
+document.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset;
+  if(d.m){mode=d.m;modes();next()}
+  else if(d.a==='chk')check();
+  else if(d.a==='hint')$('#fb').innerHTML=`Palavras: ${shuf(answers()[0].replace(/[.?!]/g,'').split(' ')).join(' · ')}`;
+  else if(d.a==='show'&&!done)finish(false);
+  else if(d.a==='next')next();
+  else if(d.a==='say')say(answers()[0]);
+};
+modes();score();next();
+</script>
+</body>
+</html>
