@@ -142,9 +142,10 @@ AULAS.forEach(a => {
   audio.onpause = () => { play.textContent = audio.currentTime > 0 && !audio.ended ? "▶ Continuar" : "▶ Iniciar"; };
   audio.onended = () => { play.textContent = "▶ Iniciar"; };
   audio.onerror = () => {
-    erro.hidden = false;
-    erro.textContent = "Erro ao carregar o áudio. Confira o compartilhamento do arquivo ou use um arquivo local.";
-  };
+  play.textContent = "▶ Iniciar";
+  erro.hidden = false;
+  erro.textContent = "Erro ao carregar o áudio. Confira o caminho do arquivo (ex.: audios/aula1.mp3).";
+};
 
   audio.ontimeupdate = () => {
     if (!arrastando && audio.duration) bar.value = (audio.currentTime / audio.duration) * 100;
