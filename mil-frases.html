@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Frases em inglês</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="ingles.css">
+</head>
+<body>
+<header class="top">
+  <div><h1>Frases em inglês</h1><p class="sub" id="cnt"></p></div>
+  <div class="bar"><a class="tog" href="index.html">← Início</a><button class="tog" id="slow" aria-pressed="false">🐢 Voz lenta</button></div>
+</header>
+<div class="page"><div class="card">
+  <input type="text" id="q" placeholder="Buscar em inglês ou português" aria-label="Buscar frase" autocomplete="off">
+  <div class="bar" id="cats"></div>
+  <div id="list"></div>
+  <div class="bar"><button class="btn alt" id="more" hidden>Mostrar mais</button></div>
+</div></div>
+<script src="ingles.js"></script>
+<script src="mil-frases.js"></script>
+<script>
+const D=[],CATS=[];let c0='',cat='Todas',lim=50,term='';
+RAW.split('\n').forEach(l=>{
+  l=l.trim();if(!l)return;
+  if(l[0]==='#'){c0=l.slice(1);CATS.push(c0)}
+  else{const [e,p]=l.split('|');D.push({c:c0,e,p,s:fold(e+' '+p)})}
+});
+function fold(s){return s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}
+$('#cnt').textContent=D.length+' frases. Toque no alto-falante para ouvir.';
+
+function view(){
+  const f=D.filter(x=>(cat==='Todas'||x.c===cat)&&(!term||x.s.includes(term)));
+  $('#cats').innerHTML=['Todas',...CATS].map(c=>`<button class="tog" data-c="${c}" aria-pressed="${c===cat}">${c}</button>`).join('');
+  $('#list').innerHTML=f.length?f.slice(0,lim).map(x=>`<div class="row"><button class="sp" data-i="${D.indexOf(x)}" aria-label="Ouvir">🔊</button><div><div class="en">${x.e}</div><div class="pt">${x.p}</div></div></div>`).join(''):'<p class="sub">Nenhuma frase encontrada.</p>';
+  $('#more').hidden=f.length<=lim;
+  $('#more').textContent=`Mostrar mais (${f.length-lim} restantes)`;
+}
+$('#q').oninput=e=>{term=fold(e.target.value.trim());lim=50;view()};
+$('#more').onclick=()=>{lim+=50;view()};
+document.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.c){cat=b.dataset.c;lim=50;view()}
+  else if(b.dataset.i)say(D[b.dataset.i].e);
+};
+view();
+</script>
+</body>
+</html>
