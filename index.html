@@ -47,16 +47,23 @@
 
   <div>
 
-    <iframe 
-        src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing" 
-        width="300" 
-        height="60" 
-        frameborder="0" 
-        allow="autoplay">
-    </iframe>
+   <audio id="audioInstrucao">
+    <source
+        src="https://drive.google.com/uc?export=download&id=1ABCxyz123456789"
+        type="audio/mpeg">
+    </audio>
+
 
   </div>
-</d
+  <script>
+  function reproduzirAudio() {
+      const audio = document.getElementById("audioInstrucao");
+      audio.currentTime = 0;
+      audio.play();
+  }
+  </script>
+  
+</div>
 
 </body>
 </html>
