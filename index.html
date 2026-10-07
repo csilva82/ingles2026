@@ -44,27 +44,28 @@
       <a class="btn alt" href="frases.html#misto">Misto</a>
     </div>
   </section>
-</div>
 
   <div>
-    <!-- Botão que o usuário vai clicar -->
-    <button onclick="controlarAudio()">▶ Play / Pausar</button>
+  
 
-    <!-- Tag de áudio oculta com o seu link direto do Drive -->
-    <audio id="meuAudio" src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing"></audio>
-    </div>
+  <!-- Seu botão personalizado -->
+    <button id="btnAudio" onclick="alternarAudio()">▶ Play</button>
+    <!-- O iframe carrega a pré-visualização oficial do Drive de forma oculta -->
+    <!-- Substitua ID_DO_SEU_ARQUIVO pelo ID real do arquivo -->
+    <iframe id="playerDrive" 
+            src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing" 
+            width="0" 
+            height="0" 
+            style="display:none; visibility:hidden;">
+    </iframe>
+  </div>
+</div>
     <script>
-        // Função que controla a reprodução
-        function controlarAudio() {
-            var audio = document.getElementById("meuAudio");
-            
-            if (audio.paused) {
-                audio.play();
-            } else {
-                audio.pause();
-            }
-        }
+        // Nota: Devido a restrições de segurança de origens diferentes (CORS),
+        // o controle 100% via JavaScript em iframes externos pode ser limitado em alguns navegadores.
+        // Se o erro persistir, a melhor alternativa é usar a tag <audio> padrão exibindo os controles:
     </script>
+  
 
 </body>
 </html>
