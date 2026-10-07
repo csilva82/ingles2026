@@ -48,94 +48,26 @@
   <div>
 
 
-<section class="blk">
-    <h2>🔊 Áudio de teste</h2>
+    <h3>Aula 1</h3>
 
-    <p class="sub">
-        Clique no botão para reproduzir a instrução.
-    </p>
+    <iframe
+        src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/preview"
+        width="100%"
+        height="100"
+        allow="autoplay">
+    </iframe>
 
-    <button
-        type="button"
-        class="btn"
-        onclick="reproduzirAudio()">
-        🔊 Reproduzir instrução
-    </button>
 
-    <button
-        type="button"
-        class="btn alt"
-        onclick="pararAudio()">
-        ⏹ Parar
-    </button>
+    <h3>Aula 2</h3>
 
-    <audio id="audioInstrucao" preload="metadata">
-        <source
-            src="https://drive.google.com/uc?export=download&id=1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv"
-            type="audio/mpeg">
-    </audio>
-
-    <p id="statusAudio" class="sub"></p>
-</section>
-</div>
-<script>
-
-const audio = document.getElementById("audioInstrucao");
-const statusAudio = document.getElementById("statusAudio");
-
-function reproduzirAudio() {
-
-    statusAudio.textContent = "Carregando áudio...";
-
-    audio.currentTime = 0;
-
-    const resultado = audio.play();
-
-    if (resultado !== undefined) {
-
-        resultado
-            .then(() => {
-                statusAudio.textContent = "🔊 Reproduzindo...";
-            })
-            .catch((erro) => {
-                console.error("Erro ao reproduzir:", erro);
-
-                statusAudio.textContent =
-                    "❌ Não foi possível reproduzir o áudio.";
-            });
-    }
-}
-
-function pararAudio() {
-
-    audio.pause();
-    audio.currentTime = 0;
-
-    statusAudio.textContent = "Áudio parado.";
-}
-
-audio.addEventListener("ended", function() {
-
-    statusAudio.textContent = "Áudio finalizado.";
-
-});
-
-audio.addEventListener("error", function() {
-
-    console.error("Erro no arquivo de áudio:", audio.error);
-
-    statusAudio.textContent =
-        "❌ Erro ao carregar o arquivo de áudio.";
-
-});
-
-</script>
-
+    <iframe
+        src="https://drive.google.com/file/d/1Li0njH7K3CQGAmt_kSv7aUwbD9_W7Dyh/preview"
+        width="100%"
+        height="100"
+        allow="autoplay">
+    </iframe>
 
     
-
-  
-
-
+</div>
 </body>
 </html>
