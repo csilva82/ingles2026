@@ -46,29 +46,17 @@
   </section>
 
   <div>
-  <!-- Botão corrigido -->
-    <button id="btnAudio1" onclick="alternarAudio()">▶ Play / Pausar</button>
 
-    <!-- Tag de áudio com o link direto -->
-    <audio id="meuAudio" src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing"></audio>
+    <iframe 
+        src="https://drive.google.com/file/d/1Uz_4xZ8byEAZ5kcYPvRsqzlH_Tb6NhJv/view?usp=sharing" 
+        width="300" 
+        height="60" 
+        frameborder="0" 
+        allow="autoplay">
+    </iframe>
 
   </div>
-</div>
-    <script>
-        // A função agora tem exatamente o mesmo nome do onclick do botão
-        function alternarAudio() {
-            var audio = document.getElementById("meuAudio");
-            
-            if (audio.paused) {
-                audio.play().catch(function(error) {
-                    console.log("Erro ao tocar o áudio: ", error);
-                });
-            } else {
-                audio.pause();
-            }
-        }
-    </script>
-  
+</d
 
 </body>
 </html>
