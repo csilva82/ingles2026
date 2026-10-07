@@ -6,10 +6,23 @@
 <title>Inglês do Zero – Início</title>
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="ingles.css">
+<style>
+  .aula{border:1px solid #8884;border-radius:12px;padding:12px;margin:10px 0}
+  .aula h3{margin:0 0 8px}
+  .ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .ctrl button,.ctrl select{font:inherit;padding:8px 12px;border-radius:8px;border:1px solid #8886;background:transparent;color:inherit;cursor:pointer;min-height:40px}
+  .ctrl button:hover{background:#8882}
+  .ctrl .play{font-weight:700;min-width:110px}
+  .seek{display:flex;align-items:center;gap:8px;margin-top:8px}
+  .seek input[type=range]{flex:1}
+  .tempo{font-variant-numeric:tabular-nums;font-size:.9em;min-width:92px;text-align:right}
+  .erro{color:#c0392b;font-size:.9em;margin-top:6px}
+</style>
 </head>
 <body>
 <header class="top"><div><h1>Inglês do Zero</h1><p class="sub">Escolha por onde começar.</p></div></header>
 <div class="page">
+
   <section class="blk">
     <h2>Lições do zero</h2>
     <p class="sub">Do "Hello" ao inglês avançado, com voz e quiz.</p>
@@ -19,6 +32,7 @@
       <a class="btn" href="ingles-do-zero.html#nivel2">Avançado</a>
     </div>
   </section>
+
   <section class="blk">
     <h2>Vocabulário</h2>
     <p class="sub">Dia a dia, trabalho, reuniões e e-mail, indústria e automação.</p>
@@ -29,11 +43,13 @@
       <a class="btn alt" href="vocabulario.html#3">Indústria</a>
     </div>
   </section>
+
   <section class="blk">
     <h2>Frases para ouvir</h2>
     <p class="sub">Frases prontas com voz e a tradução logo abaixo, por categoria.</p>
     <div class="bar"><a class="btn" href="mil-frases.html">Abrir frases</a></div>
   </section>
+
   <section class="blk">
     <h2>Montar frases</h2>
     <p class="sub">Você digita a frase em inglês e escolhe o tempo verbal.</p>
@@ -45,24 +61,103 @@
     </div>
   </section>
 
-  <div>
+  <section class="blk">
+    <h2>Aulas em áudio</h2>
+    <div id="aulas"></div>
+  </section>
 
-    
-    <h3>Aula 122</h3>
-     <iframe
-        src="https://drive.google.com/file/d/1n63DloSa1g__M-DBp-Zp6olyKVdMSUZS/preview"
-        width="100%"
-        height="5%"
-        allow="autoplay">
-      </iframe>
-    <h3>Aula 2</h3>
-      <iframe
-          src="https://drive.google.com/file/d/1WiKILJMe1wXgs11KdTiqVCSafK2I64e6/preview"
-          width="100%"
-          height="5%"
-          allow="autoplay">
-       </iframe>
-    </div>
 </div>
+
+<script>
+// Link direto do Google Drive a partir do ID do arquivo
+const drive = id => `https://drive.google.com/uc?export=download&id=${id}`;
+
+// Para adicionar aulas, inclua uma linha aqui.
+// Também pode usar arquivo local: { titulo:"Aula 3", src:"audios/aula3.mp3" }
+const AULAS = [
+  { titulo: "Aula 1", src: drive("1n63DloSa1g__M-DBp-Zp6olyKVdMSUZS") },
+  { titulo: "Aula 2",   src: drive("1WiKILJMe1wXgs11KdTiqVCSafK2I64e6") },
+];
+
+const fmt = s => {
+  if (!isFinite(s)) return "0:00";
+  const m = Math.floor(s / 60), r = Math.floor(s % 60);
+  return m + ":" + String(r).padStart(2, "0");
+};
+
+const players = [];
+
+AULAS.forEach(a => {
+  const box = document.createElement("div");
+  box.className = "aula";
+  box.innerHTML = `
+    <h3>${a.titulo}</h3>
+    <div class="ctrl">
+      <button class="back"  title="Voltar 10s">⏪ 10s</button>
+      <button class="play"  title="Iniciar / Pausar">▶ Iniciar</button>
+      <button class="stop"  title="Parar">⏹ Parar</button>
+      <button class="fwd"   title="Avançar 10s">10s ⏩</button>
+      <select class="vel" title="Velocidade">
+        <option value="0.75">0.75x</option>
+        <option value="1" selected>1x</option>
+        <option value="1.25">1.25x</option>
+        <option value="1.5">1.5x</option>
+      </select>
+    </div>
+    <div class="seek">
+      <input class="bar" type="range" min="0" max="100" value="0" step="0.1" aria-label="Posição">
+      <span class="tempo">0:00 / 0:00</span>
+    </div>
+    <div class="erro" hidden></div>`;
+  document.getElementById("aulas").appendChild(box);
+
+  const audio = new Audio();
+  audio.preload = "none";
+  audio.src = a.src;
+  players.push(audio);
+
+  const $ = s => box.querySelector(s);
+  const play = $(".play"), bar = $(".bar"), tempo = $(".tempo"), erro = $(".erro");
+  let arrastando = false;
+
+  play.onclick = () => {
+    if (audio.paused) {
+      // pausa as outras aulas
+      players.forEach(p => { if (p !== audio) p.pause(); });
+      audio.play().catch(() => {
+        erro.hidden = false;
+        erro.textContent = "Não foi possível tocar. Verifique se o arquivo está compartilhado como 'Qualquer pessoa com o link'.";
+      });
+    } else {
+      audio.pause();
+    }
+  };
+
+  $(".stop").onclick = () => { audio.pause(); audio.currentTime = 0; };
+  $(".back").onclick = () => { audio.currentTime = Math.max(0, audio.currentTime - 10); };
+  $(".fwd").onclick  = () => { audio.currentTime = Math.min(audio.duration || 1e9, audio.currentTime + 10); };
+  $(".vel").onchange = e => { audio.playbackRate = parseFloat(e.target.value); };
+
+  audio.onplay  = () => { play.textContent = "⏸ Pausar"; erro.hidden = true; };
+  audio.onpause = () => { play.textContent = audio.currentTime > 0 && !audio.ended ? "▶ Continuar" : "▶ Iniciar"; };
+  audio.onended = () => { play.textContent = "▶ Iniciar"; };
+  audio.onerror = () => {
+    erro.hidden = false;
+    erro.textContent = "Erro ao carregar o áudio. Confira o compartilhamento do arquivo ou use um arquivo local.";
+  };
+
+  audio.ontimeupdate = () => {
+    if (!arrastando && audio.duration) bar.value = (audio.currentTime / audio.duration) * 100;
+    tempo.textContent = `${fmt(audio.currentTime)} / ${fmt(audio.duration)}`;
+  };
+  audio.onloadedmetadata = audio.ontimeupdate;
+
+  bar.oninput  = () => { arrastando = true; };
+  bar.onchange = () => {
+    if (audio.duration) audio.currentTime = (bar.value / 100) * audio.duration;
+    arrastando = false;
+  };
+});
+</script>
 </body>
 </html>
