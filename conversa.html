@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conversa em inglês</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6fa;
+    --card: #ffffff;
+    --text: #1d2433;
+    --muted: #5b6577;
+    --line: #d9dfea;
+    --brand: #2d7ff9;
+    --brand-dark: #1b63cc;
+    --bot: #e9eef8;
+    --me: #2d7ff9;
+    --ok: #1f8a4c;
+    --bad: #c2362b;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #12161f; --card: #1b2130; --text: #eaeef7; --muted: #9aa5ba;
+      --line: #2e374a; --bot: #262e42; --brand: #4b92ff; --brand-dark: #6aa5ff;
+      --me: #2d6fd6; --ok: #4cc283; --bad: #ff7b6e;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 16px; }
+  .voltar { display: inline-block; margin-bottom: 8px; color: var(--brand); text-decoration: none; font-weight: 700; }
+  h1 { margin: 4px 0 4px; font-size: 1.7rem; }
+  .sub { margin: 0 0 16px; color: var(--muted); }
+
+  button { font: inherit; cursor: pointer; }
+  button:focus-visible, a:focus-visible { outline: 3px solid var(--brand); outline-offset: 2px; }
+
+  /* escolha de cenário */
+  .cenarios { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
+  .cenario {
+    text-align: left; padding: 14px; border-radius: 12px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .cenario:hover { border-color: var(--brand); }
+  .cenario strong { display: block; font-size: 1.1rem; }
+  .cenario span { color: var(--muted); font-size: .92rem; }
+
+  /* conversa */
+  .topo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .topo h2 { margin: 0; font-size: 1.2rem; }
+  .ferr { display: flex; gap: 8px; flex-wrap: wrap; }
+  .peq {
+    padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line);
+    background: var(--card); color: var(--text); font-size: .9rem;
+  }
+  .peq[aria-pressed="true"] { background: var(--brand); border-color: var(--brand); color: #fff; }
+
+  .chat { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  .msg { max-width: 85%; padding: 10px 14px; border-radius: 14px; }
+  .msg .en { font-size: 1.05rem; }
+  .msg .pt { margin-top: 4px; font-size: .9rem; color: var(--muted); }
+  .msg.bot { align-self: flex-start; background: var(--bot); border-bottom-left-radius: 4px; }
+  .msg.eu { align-self: flex-end; background: var(--me); color: #fff; border-bottom-right-radius: 4px; }
+  .msg.eu .pt { color: #dce8ff; }
+  .msg .acoes { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .msg .acoes button {
+    padding: 4px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.6);
+    background: transparent; color: inherit; font-size: .85rem;
+  }
+  .msg.bot .acoes button { border-color: var(--line); }
+  .resultado { margin-top: 6px; font-size: .9rem; }
+
+  .escolhas { display: grid; gap: 8px; }
+  .escolhas .titulo { margin: 0 0 2px; font-weight: 700; }
+  .opcao {
+    text-align: left; padding: 12px 14px; border-radius: 10px;
+    border: 1px solid var(--line); background: var(--card); color: var(--text);
+  }
+  .opcao:hover:not(:disabled) { border-color: var(--brand); }
+  .opcao:disabled { opacity: .55; cursor: default; }
+  .opcao .pt { display: block; color: var(--muted); font-size: .88rem; margin-top: 2px; }
+  .feedback { margin: 0; padding: 10px 14px; border-radius: 10px; background: var(--card); border-left: 4px solid var(--bad); }
+
+  .fim { padding: 18px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); text-align: center; }
+  .fim h3 { margin: 0 0 6px; }
+  .fim .acoes-fim { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .btn {
+    padding: 10px 16px; border: none; border-radius: 8px;
+    background: var(--brand); color: #fff; font-weight: 700;
+  }
+  .btn:hover { background: var(--brand-dark); }
+  .btn.sec { background: transparent; color: var(--brand); border: 1px solid var(--brand); }
+
+  .aviso { color: var(--muted); font-size: .85rem; margin-top: 16px; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="voltar" href="index.html">← Voltar</a>
+  <h1>Conversa em inglês</h1>
+  <p class="sub">Escolha uma situação e responda ao que a pessoa diz. Você ouve cada frase e pode repetir em voz alta.</p>
+
+  <!-- Tela 1: cenários -->
+  <section id="telaCenarios">
+    <div class="cenarios" id="listaCenarios"></div>
+  </section>
+
+  <!-- Tela 2: conversa -->
+  <section id="telaConversa" hidden>
+    <div class="topo">
+      <h2 id="tituloCenario"></h2>
+      <div class="ferr">
+        <button class="peq" id="btnTrad" aria-pressed="true">Tradução</button>
+        <button class="peq" id="btnVoz" aria-pressed="true">Voz</button>
+        <button class="peq" id="btnSair">Trocar situação</button>
+      </div>
+    </div>
+    <div class="chat" id="chat" aria-live="polite"></div>
+    <div id="area"></div>
+  </section>
+
+  <p class="aviso">Dica: o reconhecimento de voz funciona melhor no Chrome e no Edge, e pede permissão para usar o microfone.</p>
+</div>
+
+<script src="cenarios-extra.js"></script>
+<script>
+/* ------------------------------------------------------------
+   CONTEÚDO — para criar uma nova situação, copie um bloco abaixo.
+   bot: fala da outra pessoa | opcoes: respostas possíveis
+   ok: true = resposta adequada | fb: explicação quando errada
+------------------------------------------------------------ */
+var CENARIOS = [
+  {
+    nome: "Restaurante",
+    desc: "Pedir uma mesa, comida e a conta.",
+    passos: [
+      { bot: "Good evening! Welcome. Do you have a reservation?", pt: "Boa noite! Bem-vindo. Vocês têm reserva?",
+        opcoes: [
+          { en: "No, we don't. Do you have a table for two?", pt: "Não, não temos. Vocês têm uma mesa para dois?", ok: true },
+          { en: "I am fine, thank you.", pt: "Estou bem, obrigado.", fb: "Isso responde a \"como vai?\", mas a pergunta era sobre reserva." },
+          { en: "Yes, I eat the table.", pt: "Sim, eu como a mesa.", fb: "Confusão de palavras: para pedir uma mesa, use \"a table for two\"." }
+        ] },
+      { bot: "Of course. Here is the menu. What would you like to drink?", pt: "Claro. Aqui está o cardápio. O que gostaria de beber?",
+        opcoes: [
+          { en: "I'd like a glass of water, please.", pt: "Eu gostaria de um copo de água, por favor.", ok: true },
+          { en: "I want drink water now.", pt: "Eu quer beber água agora.", fb: "Dá para entender, mas a gramática está errada e soa seco. Prefira \"I'd like...\"." },
+          { en: "The menu is very big.", pt: "O cardápio é muito grande.", fb: "Não responde à pergunta sobre a bebida." }
+        ] },
+      { bot: "Are you ready to order?", pt: "Está pronto para pedir?",
+        opcoes: [
+          { en: "Yes. I'll have the chicken with rice, please.", pt: "Sim. Vou querer o frango com arroz, por favor.", ok: true },
+          { en: "Yes, chicken rice me.", pt: "Sim, frango arroz eu.", fb: "A ordem das palavras ficou errada. Use \"I'll have...\" ou \"I'd like...\"." },
+          { en: "No, I am a waiter.", pt: "Não, eu sou garçom.", fb: "Quem é o garçom é a outra pessoa. A pergunta era se você já quer pedir." }
+        ] },
+      { bot: "Would you like anything else?", pt: "Gostaria de mais alguma coisa?",
+        opcoes: [
+          { en: "No, that's all. Could I have the check, please?", pt: "Não, é só isso. Poderia trazer a conta, por favor?", ok: true },
+          { en: "No, I have a check.", pt: "Não, eu tenho uma conta.", fb: "Para pedir a conta, o verbo é \"to have\" no pedido: \"Could I have the check?\"." },
+          { en: "Yes, the check is delicious.", pt: "Sim, a conta é deliciosa.", fb: "A conta não se come. 😄 Para pedir a conta: \"Could I have the check, please?\"." }
+        ] },
+      { bot: "Here you are. Thank you, and have a nice evening!", pt: "Aqui está. Obrigado e tenha uma boa noite!",
+        opcoes: [
+          { en: "Thank you! You too. The food was great.", pt: "Obrigado! O senhor também. A comida estava ótima.", ok: true },
+          { en: "You are welcome.", pt: "De nada.", fb: "\"You're welcome\" responde a um agradecimento seu. Aqui foi o garçom quem agradeceu." },
+          { en: "Good morning.", pt: "Bom dia.", fb: "A cena é à noite (evening). Seria \"Good evening\" ou \"Good night\" ao sair." }
+        ] }
+    ]
+  },
+  {
+    nome: "Aeroporto",
+    desc: "Fazer check-in e despachar a mala.",
+    passos: [
+      { bot: "Hello! Where are you flying today?", pt: "Olá! Para onde você está voando hoje?",
+        opcoes: [
+          { en: "I'm flying to Miami. Here is my passport.", pt: "Estou indo para Miami. Aqui está meu passaporte.", ok: true },
+          { en: "I am flying by the airport.", pt: "Estou voando pelo aeroporto.", fb: "Para dizer o destino, use \"to\": \"I'm flying to Miami\"." },
+          { en: "My name is Miami.", pt: "Meu nome é Miami.", fb: "A pergunta era sobre o destino, não sobre o seu nome." }
+        ] },
+      { bot: "Do you have any bags to check in?", pt: "Você tem malas para despachar?",
+        opcoes: [
+          { en: "Yes, I have one suitcase.", pt: "Sim, tenho uma mala.", ok: true },
+          { en: "Yes, I have one suitcases.", pt: "Sim, eu tenho uma malas.", fb: "Com \"one\" o substantivo fica no singular: one suitcase." },
+          { en: "No, thank you, I am hungry.", pt: "Não, obrigado, estou com fome.", fb: "Não responde à pergunta sobre as malas." }
+        ] },
+      { bot: "Would you like a window seat or an aisle seat?", pt: "Prefere assento na janela ou no corredor?",
+        opcoes: [
+          { en: "A window seat, please.", pt: "Na janela, por favor.", ok: true },
+          { en: "I like windows seat.", pt: "Eu gosto janelas assento.", fb: "Para escolher, basta dizer \"A window seat, please\"." },
+          { en: "Yes, please.", pt: "Sim, por favor.", fb: "A pergunta tinha duas opções (window ou aisle). \"Yes\" não escolhe nenhuma." }
+        ] },
+      { bot: "Here is your boarding pass. Boarding starts at gate 12 at 3 p.m.", pt: "Aqui está seu cartão de embarque. O embarque começa no portão 12, às 15h.",
+        opcoes: [
+          { en: "Thank you. Where is gate 12, please?", pt: "Obrigado. Onde fica o portão 12, por favor?", ok: true },
+          { en: "Thank you. Where is my house?", pt: "Obrigado. Onde fica minha casa?", fb: "Pergunta fora de contexto. O que você precisa saber é onde fica o portão." },
+          { en: "I don't boarding.", pt: "Eu não embarcando.", fb: "Frase incompleta e sem sentido aqui. Agradecer e perguntar o caminho é o natural." }
+        ] }
+    ]
+  },
+  {
+    nome: "Conhecendo alguém",
+    desc: "Apresentar-se e bater papo básico.",
+    passos: [
+      { bot: "Hi! I'm Sarah. Nice to meet you.", pt: "Oi! Eu sou a Sarah. Prazer em conhecer você.",
+        opcoes: [
+          { en: "Nice to meet you too. I'm Carlos.", pt: "Prazer em conhecer você também. Eu sou o Carlos.", ok: true },
+          { en: "I am fine and you?", pt: "Estou bem e você?", fb: "Isso responde \"How are you?\". Aqui a Sarah se apresentou." },
+          { en: "Me Carlos is.", pt: "Eu Carlos é.", fb: "Ordem errada. O correto é \"I'm Carlos\" ou \"My name is Carlos\"." }
+        ] },
+      { bot: "Where are you from?", pt: "De onde você é?",
+        opcoes: [
+          { en: "I'm from Brazil. And you?", pt: "Eu sou do Brasil. E você?", ok: true },
+          { en: "I am of Brazil.", pt: "Eu sou de o Brasil.", fb: "Em inglês, origem usa \"from\": I'm from Brazil." },
+          { en: "I from Brazil go.", pt: "Eu do Brasil vou.", fb: "Falta o verbo \"to be\": I'm from Brazil." }
+        ] },
+      { bot: "What do you do for a living?", pt: "O que você faz da vida? (Qual é sua profissão?)",
+        opcoes: [
+          { en: "I work as an engineer in a factory.", pt: "Eu trabalho como engenheiro em uma fábrica.", ok: true },
+          { en: "I am doing a living.", pt: "Eu estou fazendo uma vida.", fb: "Tradução literal que não funciona. Diga a profissão: \"I'm an engineer\"." },
+          { en: "I live in a factory.", pt: "Eu moro em uma fábrica.", fb: "\"Live\" é morar. Para profissão use \"work\" ou \"I'm a/an ...\"." }
+        ] },
+      { bot: "That sounds interesting! Do you like your job?", pt: "Parece interessante! Você gosta do seu trabalho?",
+        opcoes: [
+          { en: "Yes, I do. It's challenging, but I enjoy it.", pt: "Sim, gosto. É desafiador, mas eu aprecio.", ok: true },
+          { en: "Yes, I like.", pt: "Sim, eu gosto.", fb: "Em inglês \"like\" precisa de complemento ou de \"do\": \"Yes, I do\" ou \"I like it\"." },
+          { en: "Yes, I am.", pt: "Sim, eu sou.", fb: "A pergunta usa \"do you\", então a resposta curta é \"Yes, I do\"." }
+        ] }
+    ]
+  },
+  {
+    nome: "Reunião de trabalho",
+    desc: "Participar, pedir repetição e combinar prazos.",
+    passos: [
+      { bot: "Good morning, everyone. Let's get started with the production report.", pt: "Bom dia a todos. Vamos começar com o relatório de produção.",
+        opcoes: [
+          { en: "Good morning. I'm ready.", pt: "Bom dia. Estou pronto.", ok: true },
+          { en: "Good night. I am ready.", pt: "Boa noite. Estou pronto.", fb: "\"Good night\" é despedida. De manhã use \"Good morning\"." },
+          { en: "Goodbye, everyone.", pt: "Tchau a todos.", fb: "A reunião está começando, não terminando." }
+        ] },
+      { bot: "Line two stopped for twenty minutes yesterday because of a sensor failure.", pt: "A linha dois parou por vinte minutos ontem por causa de falha em um sensor.",
+        opcoes: [
+          { en: "Sorry, could you repeat that, please?", pt: "Desculpe, poderia repetir, por favor?", ok: true },
+          { en: "Repeat!", pt: "Repita!", fb: "Entendível, mas muito ríspido para uma reunião. Seja mais educado." },
+          { en: "I no understand you.", pt: "Eu não entender você.", fb: "O correto é \"I don't understand\". Pedir repetição com \"Could you repeat...?\" é mais natural." }
+        ] },
+      { bot: "A sensor failure on line two. Can you check it by Friday?", pt: "Uma falha de sensor na linha dois. Você consegue verificar até sexta?",
+        opcoes: [
+          { en: "Yes, I can. I'll send you a report on Friday.", pt: "Sim, consigo. Enviarei um relatório na sexta.", ok: true },
+          { en: "Yes, I can to check.", pt: "Sim, eu posso para verificar.", fb: "Depois de \"can\" o verbo vem sem \"to\": \"I can check it\"." },
+          { en: "No, Friday is a fruit.", pt: "Não, sexta é uma fruta.", fb: "Resposta sem sentido. Se não puder, diga \"I'm afraid I can't. Can we do Monday?\"." }
+        ] },
+      { bot: "Great. Any questions before we finish?", pt: "Ótimo. Alguma dúvida antes de encerrarmos?",
+        opcoes: [
+          { en: "No questions from me. Thank you, everyone.", pt: "Sem perguntas da minha parte. Obrigado a todos.", ok: true },
+          { en: "Yes, I have not question.", pt: "Sim, eu tenho não pergunta.", fb: "Melhor: \"No, I don't have any questions\"." },
+          { en: "Good morning again.", pt: "Bom dia de novo.", fb: "Não faz sentido cumprimentar de novo no fim da reunião." }
+        ] }
+    ]
+  }
+];
+
+/* ------------------------------------------------------------ */
+var $ = function (id) { return document.getElementById(id); };
+var telaCenarios = $("telaCenarios"), telaConversa = $("telaConversa");
+var chat = $("chat"), area = $("area");
+var btnTrad = $("btnTrad"), btnVoz = $("btnVoz");
+
+var cenario = null, passoAtual = 0, erros = 0;
+var mostrarTrad = true, vozLigada = true;
+var temVoz = "speechSynthesis" in window;
+var Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function falar(texto) {
+  if (!temVoz) return;
+  window.speechSynthesis.cancel();
+  var u = new SpeechSynthesisUtterance(texto);
+  u.lang = "en-US";
+  u.rate = 0.9;
+  window.speechSynthesis.speak(u);
+}
+
+function embaralhar(lista) {
+  var a = lista.slice();
+  for (var i = a.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+
+function el(tag, classe, texto) {
+  var e = document.createElement(tag);
+  if (classe) e.className = classe;
+  if (texto) e.textContent = texto;
+  return e;
+}
+
+/* ---------- lista de cenários ---------- */
+function montarLista() {
+  var lista = $("listaCenarios");
+  CENARIOS.forEach(function (c, i) {
+    var b = el("button", "cenario");
+    b.appendChild(el("strong", "", c.nome));
+    b.appendChild(el("span", "", c.desc));
+    b.addEventListener("click", function () { iniciar(i); });
+    lista.appendChild(b);
+  });
+}
+
+/* ---------- conversa ---------- */
+function iniciar(indice) {
+  cenario = CENARIOS[indice];
+  passoAtual = 0;
+  erros = 0;
+  chat.innerHTML = "";
+  area.innerHTML = "";
+  $("tituloCenario").textContent = cenario.nome;
+  telaCenarios.hidden = true;
+  telaConversa.hidden = false;
+  history.replaceState(null, "", "#" + indice);
+  mostrarPassoBot();
+}
+
+function bolha(tipo, en, pt) {
+  var m = el("div", "msg " + tipo);
+  m.appendChild(el("div", "en", en));
+  var p = el("div", "pt", pt);
+  p.hidden = !mostrarTrad;
+  p.setAttribute("data-trad", "1");
+  m.appendChild(p);
+
+  var acoes = el("div", "acoes");
+  var ouvir = el("button", "", "🔊 Ouvir");
+  ouvir.addEventListener("click", function () { falar(en); });
+  acoes.appendChild(ouvir);
+
+  if (tipo === "eu" && Reconhecimento) {
+    var res = el("div", "resultado");
+    var mic = el("button", "", "🎤 Repetir em voz alta");
+    mic.addEventListener("click", function () { ouvirUsuario(en, mic, res); });
+    acoes.appendChild(mic);
+    m.appendChild(acoes);
+    m.appendChild(res);
+  } else {
+    m.appendChild(acoes);
+  }
+  chat.appendChild(m);
+  m.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  return m;
+}
+
+function mostrarPassoBot() {
+  var passo = cenario.passos[passoAtual];
+  bolha("bot", passo.bot, passo.pt);
+  if (vozLigada) falar(passo.bot);
+  mostrarOpcoes(passo);
+}
+
+function mostrarOpcoes(passo) {
+  area.innerHTML = "";
+  var caixa = el("div", "escolhas");
+  caixa.appendChild(el("p", "titulo", "Como você responde?"));
+
+  embaralhar(passo.opcoes || gerar(passo)).forEach(function (op) {
+    var b = el("button", "opcao");
+    b.appendChild(document.createTextNode(op.en));
+    var p = el("span", "pt", op.pt);
+    p.hidden = !mostrarTrad;
+    p.setAttribute("data-trad", "1");
+    b.appendChild(p);
+
+    b.addEventListener("click", function () {
+      if (op.ok) {
+        responder(op);
+      } else {
+        erros++;
+        b.disabled = true;
+        var antigo = caixa.querySelector(".feedback");
+        if (antigo) antigo.remove();
+        var f = el("p", "feedback", "Quase. " + op.fb + " Tente outra.");
+        caixa.insertBefore(f, caixa.children[1]);
+        if (vozLigada) falar(op.en);
+      }
+    });
+    caixa.appendChild(b);
+  });
+  area.appendChild(caixa);
+}
+
+function responder(op) {
+  area.innerHTML = "";
+  bolha("eu", op.en, op.pt);
+  if (vozLigada) falar(op.en);
+  passoAtual++;
+
+  if (passoAtual < cenario.passos.length) {
+    setTimeout(mostrarPassoBot, 1800);
+  } else {
+    setTimeout(mostrarFim, 1200);
+  }
+}
+
+function mostrarFim() {
+  area.innerHTML = "";
+  var f = el("div", "fim");
+  f.appendChild(el("h3", "", "Conversa concluída!"));
+  var total = cenario.passos.length;
+  var msg = erros === 0
+    ? "Você acertou todas as respostas de primeira."
+    : "Você acertou as " + total + " respostas, com " + erros + (erros === 1 ? " tentativa errada." : " tentativas erradas.");
+  f.appendChild(el("p", "", msg));
+  var acoes = el("div", "acoes-fim");
+  var again = el("button", "btn", "Refazer");
+  again.addEventListener("click", function () { iniciar(CENARIOS.indexOf(cenario)); });
+  var outra = el("button", "btn sec", "Escolher outra situação");
+  outra.addEventListener("click", sair);
+  acoes.appendChild(again);
+  acoes.appendChild(outra);
+  f.appendChild(acoes);
+  area.appendChild(f);
+  f.scrollIntoView({ behavior: "smooth", block: "nearest" });
+}
+
+function sair() {
+  if (temVoz) window.speechSynthesis.cancel();
+  telaConversa.hidden = true;
+  telaCenarios.hidden = false;
+  history.replaceState(null, "", location.pathname);
+}
+
+/* ---------- reconhecimento de voz ---------- */
+function limpar(t) {
+  return t.toLowerCase().replace(/[^a-z0-9' ]/g, " ").split(/\s+/).filter(Boolean);
+}
+
+function ouvirUsuario(alvo, botao, saida) {
+  if (temVoz) window.speechSynthesis.cancel();
+  var rec = new Reconhecimento();
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 1;
+  botao.disabled = true;
+  botao.textContent = "🎤 Ouvindo...";
+  saida.textContent = "";
+
+  rec.onresult = function (e) {
+    var dito = e.results[0][0].transcript;
+    var esperado = limpar(alvo);
+    var falado = limpar(dito);
+    var acertos = esperado.filter(function (p) { return falado.indexOf(p) !== -1; }).length;
+    var pct = Math.round((acertos / esperado.length) * 100);
+    var texto = "Entendi: \"" + dito + "\" — " + pct + "% das palavras. ";
+    texto += pct >= 85 ? "Muito bom!" : pct >= 60 ? "Quase lá, tente de novo." : "Ouça a frase e tente outra vez.";
+    saida.textContent = texto;
+  };
+  rec.onerror = function (e) {
+    saida.textContent = e.error === "not-allowed"
+      ? "Permita o uso do microfone no navegador para praticar a fala."
+      : "Não consegui ouvir. Tente novamente.";
+  };
+  rec.onend = function () {
+    botao.disabled = false;
+    botao.textContent = "🎤 Repetir em voz alta";
+  };
+  try { rec.start(); } catch (err) { botao.disabled = false; }
+}
+
+/* ---------- controles ---------- */
+btnTrad.addEventListener("click", function () {
+  mostrarTrad = !mostrarTrad;
+  btnTrad.setAttribute("aria-pressed", String(mostrarTrad));
+  document.querySelectorAll("[data-trad]").forEach(function (e) { e.hidden = !mostrarTrad; });
+});
+btnVoz.addEventListener("click", function () {
+  vozLigada = !vozLigada;
+  btnVoz.setAttribute("aria-pressed", String(vozLigada));
+  if (!vozLigada && temVoz) window.speechSynthesis.cancel();
+});
+$("btnSair").addEventListener("click", sair);
+
+// diálogos compactos de cenarios-extra.js
+if (typeof EXTRA !== "undefined") {
+  EXTRA.forEach(function (c) {
+    CENARIOS.push({
+      nome: c.nome, desc: c.desc,
+      passos: c.p.map(function (x) {
+        return { bot: x[0], pt: x[1], certa: { en: x[2], pt: x[3], ok: true } };
+      })
+    });
+  });
+}
+
+// opções erradas: respostas de outros passos da mesma situação
+function gerar(passo) {
+  var outras = cenario.passos.filter(function (p) { return p !== passo && p.certa; });
+  var erradas = embaralhar(outras).slice(0, 2).map(function (p) {
+    return {
+      en: p.certa.en, pt: p.certa.pt,
+      fb: "Essa frase quer dizer \"" + p.certa.pt + "\" e não combina com o que foi dito."
+    };
+  });
+  return [passo.certa].concat(erradas);
+}
+
+montarLista();
+
+// permite abrir direto: conversa.html#0, #1, #2, #3
+var h = parseInt(location.hash.replace("#", ""), 10);
+if (!isNaN(h) && CENARIOS[h]) iniciar(h);
+</script>
+</body>
+</html>
