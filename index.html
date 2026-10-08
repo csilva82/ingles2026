@@ -55,50 +55,20 @@
   <div>
 
 <h3>Aula 1</h3>
-<audio id="aula1" controls style="width:100%"
-  src="https://drive.google.com/uc?export=download&id=1WiKILJMe1wXgs11KdTiqVCSafK2I64e6">
-</audio>
-<div>
-  <button onclick="voltar('aula1', 10)">⏪ -10s</button>
-  <button onclick="avancar('aula1', 10)">+10s ⏩</button>
-  <label>Velocidade:
-    <select onchange="velocidade('aula1', this.value)">
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected>1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-      <option value="2">2x</option>
-    </select>
-  </label>
-</div>
-
-<h3>Aula 2</h3>
-<audio id="aula2" controls style="width:100%"
-  src="https://drive.google.com/uc?export=download&id=1n63DloSa1g__M-DBp-Zp6olyKVdMSUZS">
-</audio>
-<div>
-  <button onclick="voltar('aula2', 10)">⏪ -10s</button>
-  <button onclick="avancar('aula2', 10)">+10s ⏩</button>
-  <label>Velocidade:
-    <select onchange="velocidade('aula2', this.value)">
-      <option value="0.5">0.5x</option>
-      <option value="0.75">0.75x</option>
-      <option value="1" selected>1x</option>
-      <option value="1.25">1.25x</option>
-      <option value="1.5">1.5x</option>
-      <option value="2">2x</option>
-    </select>
-  </label>
-</div>
-
-<script>
-  function avancar(id, s) { document.getElementById(id).currentTime += s; }
-  function voltar(id, s)  { document.getElementById(id).currentTime -= s; }
-  function velocidade(id, v) { document.getElementById(id).playbackRate = parseFloat(v); }
-</script>
-
-
+     <iframe
+        src="https://drive.google.com/file/d/1WiKILJMe1wXgs11KdTiqVCSafK2I64e6/preview"
+        width="100%"
+        height="5%"
+        allow="autoplay">
+      </iframe>
+    <h3>Aula 2</h3>
+      <iframe
+          src="https://drive.google.com/file/d/1n63DloSa1g__M-DBp-Zp6olyKVdMSUZS/preview"
+          width="100%"
+          height="5%"
+          allow="autoplay">
+       </iframe>
+    </div>  
    
     </div>
 </div>
