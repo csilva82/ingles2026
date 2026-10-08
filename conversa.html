@@ -81,6 +81,8 @@
 
   .escolhas { display: grid; gap: 8px; }
   .escolhas .titulo { margin: 0 0 2px; font-weight: 700; }
+  .mic-linha { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .mic-linha .resultado { margin: 0; flex: 1 1 200px; }
   .opcao {
     text-align: left; padding: 12px 14px; border-radius: 10px;
     border: 1px solid var(--line); background: var(--card); color: var(--text);
@@ -108,7 +110,7 @@
 <div class="wrap">
   <a class="voltar" href="index.html">← Voltar</a>
   <h1>Conversa em inglês</h1>
-  <p class="sub">Escolha uma situação e responda ao que a pessoa diz. Você ouve cada frase e pode repetir em voz alta.</p>
+  <p class="sub">Escolha uma situação e responda ao que a pessoa diz, clicando na opção ou falando em inglês no microfone.</p>
 
   <!-- Tela 1: cenários -->
   <section id="telaCenarios">
@@ -381,6 +383,34 @@ function mostrarOpcoes(passo) {
   var caixa = el("div", "escolhas");
   caixa.appendChild(el("p", "titulo", "Como você responde?"));
 
+  var lista = [];
+
+  function escolher(op, b) {
+    if (op.ok) {
+      responder(op);
+    } else {
+      erros++;
+      b.disabled = true;
+      var antigo = caixa.querySelector(".feedback");
+      if (antigo) antigo.remove();
+      var f = el("p", "feedback", "Quase. " + op.fb + " Tente outra.");
+      caixa.insertBefore(f, caixa.querySelector(".opcao"));
+      if (vozLigada) falar(op.en);
+    }
+  }
+
+  if (Reconhecimento) {
+    var linha = el("div", "mic-linha");
+    var mic = el("button", "btn", "🎤 Responder falando");
+    var res = el("span", "resultado", "");
+    mic.addEventListener("click", function () { ouvirResposta(lista, mic, res, escolher); });
+    linha.appendChild(mic);
+    linha.appendChild(res);
+    caixa.appendChild(linha);
+  } else {
+    caixa.appendChild(el("p", "resultado", "Para responder falando, abra a página no Chrome ou no Edge."));
+  }
+
   embaralhar(passo.opcoes || gerar(passo)).forEach(function (op) {
     var b = el("button", "opcao");
     b.appendChild(document.createTextNode(op.en));
@@ -388,20 +418,8 @@ function mostrarOpcoes(passo) {
     p.hidden = !mostrarTrad;
     p.setAttribute("data-trad", "1");
     b.appendChild(p);
-
-    b.addEventListener("click", function () {
-      if (op.ok) {
-        responder(op);
-      } else {
-        erros++;
-        b.disabled = true;
-        var antigo = caixa.querySelector(".feedback");
-        if (antigo) antigo.remove();
-        var f = el("p", "feedback", "Quase. " + op.fb + " Tente outra.");
-        caixa.insertBefore(f, caixa.children[1]);
-        if (vozLigada) falar(op.en);
-      }
-    });
+    b.addEventListener("click", function () { escolher(op, b); });
+    lista.push({ op: op, b: b });
     caixa.appendChild(b);
   });
   area.appendChild(caixa);
@@ -483,6 +501,54 @@ function ouvirUsuario(alvo, botao, saida) {
     botao.textContent = "🎤 Repetir em voz alta";
   };
   try { rec.start(); } catch (err) { botao.disabled = false; }
+}
+
+/* ---------- responder falando: compara com as opções ---------- */
+function ouvirResposta(lista, botao, saida, escolher) {
+  if (temVoz) window.speechSynthesis.cancel();
+  var rec = new Reconhecimento();
+  rec.lang = "en-US";
+  rec.interimResults = false;
+  rec.maxAlternatives = 3;
+  botao.disabled = true;
+  botao.textContent = "🎤 Ouvindo... fale agora";
+  saida.textContent = "";
+
+  rec.onresult = function (e) {
+    var alts = [];
+    for (var i = 0; i < e.results[0].length; i++) alts.push(e.results[0][i].transcript);
+
+    var melhor = null, nota = 0, segunda = 0;
+    lista.forEach(function (item) {
+      if (item.b.disabled) return;
+      var alvo = limpar(item.op.en);
+      var n = 0;
+      alts.forEach(function (t) {
+        var falado = limpar(t);
+        var ac = alvo.filter(function (p) { return falado.indexOf(p) !== -1; }).length;
+        n = Math.max(n, ac / alvo.length);
+      });
+      if (n > nota) { segunda = nota; nota = n; melhor = item; }
+      else if (n > segunda) { segunda = n; }
+    });
+
+    saida.textContent = "Entendi: \"" + alts[0] + "\". ";
+    if (melhor && nota >= 0.5 && nota - segunda >= 0.1) {
+      escolher(melhor.op, melhor.b);
+    } else {
+      saida.textContent += "Não identifiquei qual opção você disse. Fale a frase inteira ou clique na opção.";
+    }
+  };
+  rec.onerror = function (e) {
+    saida.textContent = e.error === "not-allowed"
+      ? "Permita o uso do microfone no navegador."
+      : "Não consegui ouvir. Tente novamente.";
+  };
+  rec.onend = function () {
+    botao.disabled = false;
+    botao.textContent = "🎤 Responder falando";
+  };
+  try { rec.start(); } catch (err) { botao.disabled = false; botao.textContent = "🎤 Responder falando"; }
 }
 
 /* ---------- controles ---------- */
