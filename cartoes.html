@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cartões de estudo</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#070b16;--line:rgba(120,200,255,.25);--text:#e8f0ff;--muted:#93a4c4;--c1:#22d3ee;--c2:#8b5cf6}
+  *{box-sizing:border-box}html,body{margin:0}
+  body{font-family:"Atkinson Hyperlegible",system-ui,sans-serif;color:var(--text);line-height:1.5;min-height:100vh;
+    background:radial-gradient(600px 400px at 10% -5%,rgba(34,211,238,.2),transparent 70%),radial-gradient(700px 500px at 100% 10%,rgba(139,92,246,.22),transparent 70%),var(--bg);
+    padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+  .wrap{max-width:640px;margin:0 auto;padding:16px}
+  a{color:var(--c1);text-decoration:none;font-weight:700}
+  h1{font-family:Orbitron,sans-serif;font-size:1.6rem;margin:6px 0 2px;background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .sub{color:var(--muted);margin:0 0 14px}
+  .ctl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+  select,button{font:inherit;color:var(--text);background:rgba(34,211,238,.08);border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+  select option{color:#000}
+  button:hover:not(:disabled){background:var(--c1);color:#04121a}
+  button:focus-visible,select:focus-visible,.card:focus-visible{outline:3px solid var(--c1);outline-offset:2px}
+  label{color:var(--muted);font-size:.9rem;display:flex;gap:6px;align-items:center}
+  .card{min-height:250px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;border-radius:20px;border:1px solid var(--line);background:rgba(255,255,255,.05);cursor:pointer;user-select:none;position:relative}
+  .card.back{border-color:var(--c2);box-shadow:0 0 30px rgba(139,92,246,.2)}
+  .cat{position:absolute;top:12px;left:16px;font-size:.78rem;letter-spacing:.1em;text-transform:uppercase;color:var(--c1)}
+  .lado{position:absolute;top:12px;right:16px;font-size:.78rem;color:var(--muted)}
+  .txt{font-size:clamp(1.5rem,6vw,2.2rem);font-weight:700}
+  .nota{margin-top:8px;color:var(--muted);font-size:1.05rem}
+  .dica{position:absolute;bottom:10px;font-size:.8rem;color:var(--muted)}
+  .prog{margin:10px 0;color:var(--muted);text-align:center;font-size:.92rem}
+  .bar{height:6px;border-radius:9px;background:rgba(255,255,255,.1);overflow:hidden;margin-bottom:6px}
+  .bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--c1),var(--c2))}
+  .acoes{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+  .sei{border-color:#34d399}.nao{border-color:#fb7185}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a href="index.html">← Voltar</a>
+  <h1>Cartões de estudo</h1>
+  <p class="sub" id="total"></p>
+  <div class="ctl">
+    <select id="cat" aria-label="Categoria"></select>
+    <button id="dir">EN → PT</button>
+    <button id="emb">🔀 Embaralhar</button>
+    <label><input type="checkbox" id="oculta"> Ocultar os que já sei</label>
+  </div>
+  <div class="card" id="card" tabindex="0" role="button" aria-label="Virar cartão"></div>
+  <div class="prog"><div class="bar"><i id="barra"></i></div><span id="pos"></span></div>
+  <div class="acoes">
+    <button id="ant">← Anterior</button>
+    <button id="som">🔊 Ouvir</button>
+    <button id="nao" class="nao">Revisar</button>
+    <button id="sei" class="sei">Já sei ✓</button>
+  </div>
+  <p class="sub" style="margin-top:14px">Atalhos: espaço vira o cartão, setas navegam, K marca "Já sei". Seu progresso fica salvo neste navegador.</p>
+</div>
+
+<script>
+/* DADOS — formato: inglês=português (ou inglês=português=nota). Para ampliar, acrescente itens separados por ";". */
+var D = {
+"Comida":"apple=maçã;bread=pão;water=água;milk=leite;cheese=queijo;egg=ovo;rice=arroz;beans=feijão;meat=carne;chicken=frango;fish=peixe;salad=salada;soup=sopa;butter=manteiga;sugar=açúcar;salt=sal;coffee=café;tea=chá;juice=suco;cake=bolo;banana=banana;orange=laranja;grape=uva;strawberry=morango;tomato=tomate;potato=batata;onion=cebola;garlic=alho;carrot=cenoura;lemon=limão",
+"Casa":"house=casa;room=quarto/cômodo;kitchen=cozinha;bathroom=banheiro;bedroom=quarto de dormir;living room=sala de estar;door=porta;window=janela;wall=parede;floor=chão;ceiling=teto;roof=telhado;garden=jardim;garage=garagem;stairs=escada;table=mesa;chair=cadeira;sofa=sofá;bed=cama;lamp=lâmpada/abajur;mirror=espelho;key=chave;fridge=geladeira;stove=fogão;oven=forno;sink=pia;shower=chuveiro;towel=toalha;blanket=cobertor;pillow=travesseiro",
+"Corpo":"head=cabeça;face=rosto;eye=olho;ear=orelha;nose=nariz;mouth=boca;tooth=dente=plural: teeth;tongue=língua;neck=pescoço;shoulder=ombro;arm=braço;elbow=cotovelo;hand=mão;finger=dedo;chest=peito;back=costas;stomach=estômago;leg=perna;knee=joelho;foot=pé=plural: feet;toe=dedo do pé;hair=cabelo;skin=pele;heart=coração;bone=osso",
+"Pessoas":"mother=mãe;father=pai;sister=irmã;brother=irmão;son=filho;daughter=filha;grandmother=avó;grandfather=avô;uncle=tio;aunt=tia;cousin=primo(a);husband=marido;wife=esposa;friend=amigo(a);neighbor=vizinho(a);boss=chefe;coworker=colega de trabalho;customer=cliente;teacher=professor(a);student=aluno(a)",
+"Adjetivos e cores":"red=vermelho;blue=azul;green=verde;yellow=amarelo;black=preto;white=branco;gray=cinza;brown=marrom;pink=rosa;purple=roxo;big=grande;small=pequeno;tall=alto;short=baixo/curto;fast=rápido;slow=lento;hot=quente;cold=frio;new=novo;old=velho;easy=fácil;difficult=difícil;cheap=barato;expensive=caro;clean=limpo;dirty=sujo;heavy=pesado;light=leve;strong=forte;weak=fraco;happy=feliz;sad=triste;tired=cansado;hungry=com fome;angry=bravo",
+"Verbos comuns":"to ask=perguntar;to answer=responder;to eat=comer;to drink=beber;to sleep=dormir;to work=trabalhar;to study=estudar;to learn=aprender;to read=ler;to write=escrever;to buy=comprar;to sell=vender;to pay=pagar;to open=abrir;to close=fechar;to start=começar;to finish=terminar;to wait=esperar;to help=ajudar;to need=precisar;to want=querer;to like=gostar;to love=amar;to think=pensar;to understand=entender;to remember=lembrar;to forget=esquecer;to call=ligar;to send=enviar;to find=encontrar;to walk=andar;to run=correr;to drive=dirigir;to travel=viajar;to wash=lavar;to cook=cozinhar;to turn on=ligar (aparelho);to turn off=desligar;to check=verificar;to fix=consertar",
+"Trabalho e indústria":"job=emprego;company=empresa;meeting=reunião;deadline=prazo;report=relatório;schedule=cronograma;salary=salário;manager=gerente;team=equipe;task=tarefa;machine=máquina;sensor=sensor;motor=motor;pump=bomba;valve=válvula;cable=cabo;switch=interruptor/chave;button=botão;screen=tela;panel=painel;alarm=alarme;failure=falha;repair=reparo;maintenance=manutenção;tool=ferramenta;wrench=chave inglesa;screw=parafuso;bolt=parafuso com porca;nut=porca;bearing=rolamento;gear=engrenagem;belt=correia;pipe=tubo;tank=tanque;pressure=pressão;temperature=temperatura;speed=velocidade;voltage=tensão;current=corrente;power=potência/energia;safety=segurança;helmet=capacete;gloves=luvas;warehouse=almoxarifado;shift=turno;spare part=peça de reposição",
+"Tempo e lugares":"today=hoje;tomorrow=amanhã;yesterday=ontem;now=agora;later=mais tarde;soon=em breve;always=sempre;never=nunca;sometimes=às vezes;often=frequentemente;morning=manhã;afternoon=tarde;evening=noite (início);night=noite;week=semana;month=mês;year=ano;street=rua;city=cidade;country=país;bank=banco;hospital=hospital;school=escola;store=loja;market=mercado;station=estação;airport=aeroporto;park=parque;church=igreja;restaurant=restaurante",
+"Perguntas e ligações":"what=o que;where=onde;when=quando;why=por que;who=quem;how=como;which=qual;how much=quanto custa/quanto;how many=quantos;because=porque;but=mas;and=e;or=ou;with=com;without=sem;before=antes;after=depois;here=aqui;there=lá;maybe=talvez",
+"Dias e meses":"Monday=segunda-feira;Tuesday=terça-feira;Wednesday=quarta-feira;Thursday=quinta-feira;Friday=sexta-feira;Saturday=sábado;Sunday=domingo;January=janeiro;February=fevereiro;March=março;April=abril;May=maio;June=junho;July=julho;August=agosto;September=setembro;October=outubro;November=novembro;December=dezembro",
+"Verbos irregulares":"be=ser/estar=was/were, been;begin=começar=began, begun;break=quebrar=broke, broken;bring=trazer=brought, brought;build=construir=built, built;buy=comprar=bought, bought;catch=pegar=caught, caught;choose=escolher=chose, chosen;come=vir=came, come;cost=custar=cost, cost;cut=cortar=cut, cut;do=fazer=did, done;draw=desenhar=drew, drawn;drink=beber=drank, drunk;drive=dirigir=drove, driven;eat=comer=ate, eaten;fall=cair=fell, fallen;feel=sentir=felt, felt;find=encontrar=found, found;fly=voar=flew, flown;forget=esquecer=forgot, forgotten;get=conseguir/obter=got, gotten;give=dar=gave, given;go=ir=went, gone;have=ter=had, had;hear=ouvir=heard, heard;hold=segurar=held, held;keep=manter=kept, kept;know=saber/conhecer=knew, known;leave=sair/deixar=left, left;lose=perder=lost, lost;make=fazer/fabricar=made, made;mean=significar=meant, meant;meet=encontrar/conhecer=met, met;pay=pagar=paid, paid;put=colocar=put, put;read=ler=read, read;run=correr=ran, run;say=dizer=said, said;see=ver=saw, seen;sell=vender=sold, sold;send=enviar=sent, sent;sit=sentar=sat, sat;sleep=dormir=slept, slept;speak=falar=spoke, spoken;spend=gastar=spent, spent;take=pegar/levar=took, taken;teach=ensinar=taught, taught;tell=contar/dizer=told, told;think=pensar=thought, thought;understand=entender=understood, understood;wear=vestir/usar=wore, worn;win=ganhar=won, won;write=escrever=wrote, written",
+"Frases úteis":"How are you?=Como vai você?;Nice to meet you.=Prazer em conhecer você.;Excuse me.=Com licença.;I'm sorry.=Sinto muito.;Thank you very much.=Muito obrigado.;You're welcome.=De nada.;I don't understand.=Eu não entendo.;Could you repeat that?=Pode repetir?;Could you speak more slowly?=Pode falar mais devagar?;What does this mean?=O que isso significa?;How do you say it in English?=Como se diz isso em inglês?;Where is the bathroom?=Onde fica o banheiro?;How much is it?=Quanto custa?;I'd like a coffee, please.=Eu gostaria de um café, por favor.;Can I pay by card?=Posso pagar com cartão?;I'm looking for this address.=Estou procurando este endereço.;I have a reservation.=Eu tenho uma reserva.;I need help.=Preciso de ajuda.;I'm lost.=Estou perdido.;What time is it?=Que horas são?;I'm running late.=Estou atrasado.;See you tomorrow.=Até amanhã.;Let me check.=Deixe-me verificar.;It's urgent.=É urgente.;The machine is not working.=A máquina não está funcionando.;I'll send you an email.=Vou enviar um e-mail para você.;Can we reschedule the meeting?=Podemos remarcar a reunião?;I agree with you.=Concordo com você.;I'm not sure.=Não tenho certeza.;It depends.=Depende."
+};
+var U="zero one two three four five six seven eight nine ten eleven twelve thirteen fourteen fifteen sixteen seventeen eighteen nineteen".split(" ");
+var T=",,twenty,thirty,forty,fifty,sixty,seventy,eighty,ninety".split(",");
+var O="zeroth first second third fourth fifth sixth seventh eighth ninth tenth eleventh twelfth thirteenth fourteenth fifteenth sixteenth seventeenth eighteenth nineteenth".split(" ");
+function num(n){return n<20?U[n]:n==100?"one hundred":T[(n/10)|0]+(n%10?"-"+U[n%10]:"")}
+function ord(n){return n<20?O[n]:n%10==0?T[(n/10)|0].replace("y","ieth"):T[(n/10)|0]+"-"+O[n%10]}
+function suf(n){return n+(["th","st","nd","rd"][(n%10<4&&(n<11||n>13))?n%10:0])}
+
+var cards=[];
+Object.keys(D).forEach(function(c){D[c].split(";").forEach(function(s){var p=s.split("=");cards.push({c:c,en:p[0],pt:p[1],n:p[2]||""})})});
+for(var n=1;n<=100;n++)cards.push({c:"Números",en:num(n),pt:String(n),n:""});
+for(var n=1;n<=31;n++)cards.push({c:"Ordinais",en:ord(n),pt:suf(n),n:""});
+for(var h=1;h<=12;h++){
+  cards.push({c:"Horas",en:"It's "+U[h]+" o'clock.",pt:h+":00",n:""});
+  cards.push({c:"Horas",en:"It's a quarter past "+U[h]+".",pt:h+":15",n:""});
+  cards.push({c:"Horas",en:"It's half past "+U[h]+".",pt:h+":30",n:""});
+  cards.push({c:"Horas",en:"It's a quarter to "+U[h%12+1]+".",pt:h+":45",n:""});
+}
+cards.forEach(function(x){x.id=x.c+"|"+x.en});
+
+var $=function(i){return document.getElementById(i)};
+var sei={},lista=[],i=0,virado=false,inverso=false;
+try{sei=JSON.parse(localStorage.getItem("cartoes-sei")||"{}")}catch(e){}
+function salvar(){try{localStorage.setItem("cartoes-sei",JSON.stringify(sei))}catch(e){}}
+
+var cats=["Todas"].concat(cards.map(function(x){return x.c}).filter(function(v,k,a){return a.indexOf(v)===k}));
+cats.forEach(function(c){var o=document.createElement("option");o.textContent=c;$("cat").appendChild(o)});
+$("total").textContent=cards.length+" cartões em "+(cats.length-1)+" categorias.";
+
+function aplicar(manter){
+  var c=$("cat").value,o=$("oculta").checked;
+  lista=cards.filter(function(x){return (c==="Todas"||x.c===c)&&!(o&&sei[x.id])});
+  if(!manter)i=0;
+  if(i>=lista.length)i=Math.max(0,lista.length-1);
+  virado=false;mostrar();
+}
+function mostrar(){
+  var k=lista[i],card=$("card");card.innerHTML="";
+  var feitos=cards.filter(function(x){return sei[x.id]}).length;
+  $("barra").style.width=(feitos/cards.length*100)+"%";
+  if(!k){card.className="card";card.textContent="Nenhum cartão aqui. Desmarque \"Ocultar os que já sei\" ou troque a categoria.";$("pos").textContent="";return}
+  card.className="card"+(virado?" back":"");
+  var frente=inverso?k.pt:k.en,verso=inverso?k.en:k.pt;
+  function add(t,cl,tx){var d=document.createElement("div");d.className=cl;d.textContent=tx;card.appendChild(d)}
+  add(0,"cat",k.c);
+  add(0,"lado",(virado?"verso":"frente")+(sei[k.id]?" ✓":""));
+  add(0,"txt",virado?verso:frente);
+  if(virado&&k.n)add(0,"nota",k.n);
+  if(!virado)add(0,"dica","toque para virar");
+  $("pos").textContent=(i+1)+" / "+lista.length+" · você marcou "+feitos+" de "+cards.length+" como sabidos";
+}
+function ir(d){if(!lista.length)return;i=(i+d+lista.length)%lista.length;virado=false;mostrar()}
+function falar(){
+  var k=lista[i];if(!k||!("speechSynthesis" in window))return;
+  var u=new SpeechSynthesisUtterance(k.en+(k.c==="Verbos irregulares"?". "+k.n:""));
+  u.lang="en-US";u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u);
+}
+function marcar(v){
+  var k=lista[i];if(!k)return;
+  if(v)sei[k.id]=1;else delete sei[k.id];
+  salvar();
+  if(v&&$("oculta").checked)aplicar(true);else ir(1);
+}
+$("card").onclick=function(){virado=!virado;mostrar();if(virado&&!inverso)falar()};
+$("ant").onclick=function(){ir(-1)};
+$("som").onclick=falar;
+$("sei").onclick=function(){marcar(true)};
+$("nao").onclick=function(){marcar(false)};
+$("cat").onchange=function(){aplicar(false)};
+$("oculta").onchange=function(){aplicar(false)};
+$("dir").onclick=function(){inverso=!inverso;this.textContent=inverso?"PT → EN":"EN → PT";virado=false;mostrar()};
+$("emb").onclick=function(){
+  for(var a=cards.length-1;a>0;a--){var b=Math.floor(Math.random()*(a+1));var t=cards[a];cards[a]=cards[b];cards[b]=t}
+  aplicar(false);
+};
+document.addEventListener("keydown",function(e){
+  if(e.target.tagName==="SELECT"||e.target.tagName==="INPUT")return;
+  if(e.key==="ArrowRight")ir(1);
+  else if(e.key==="ArrowLeft")ir(-1);
+  else if(e.key===" "){e.preventDefault();$("card").click()}
+  else if(e.key==="k"||e.key==="K")marcar(true);
+});
+aplicar(false);
+</script>
+</body>
+</html>
