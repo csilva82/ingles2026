@@ -121,7 +121,7 @@
       <h2 id="tituloCenario"></h2>
       <div class="ferr">
         <button class="peq" id="btnTrad" aria-pressed="true">Tradução</button>
-        <button class="peq" id="btnVoz" aria-pressed="true">Voz</button>
+        <button class="peq" id="btnVoz" aria-pressed="true">🔊 Voz: ligada</button>
         <button class="peq" id="btnSair">Trocar situação</button>
       </div>
     </div>
@@ -279,13 +279,23 @@ var mostrarTrad = true, vozLigada = true;
 var temVoz = "speechSynthesis" in window;
 var Reconhecimento = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+var ultimaFala = "";
+
 function falar(texto) {
-  if (!temVoz) return;
-  window.speechSynthesis.cancel();
+  if (!temVoz) {
+    alert("Seu navegador não tem voz sintetizada. Tente o Chrome, Edge ou Safari.");
+    return;
+  }
+  var synth = window.speechSynthesis;
+  synth.cancel();
   var u = new SpeechSynthesisUtterance(texto);
   u.lang = "en-US";
   u.rate = 0.9;
-  window.speechSynthesis.speak(u);
+  var vozes = synth.getVoices();
+  for (var i = 0; i < vozes.length; i++) {
+    if (vozes[i].lang && vozes[i].lang.toLowerCase().indexOf("en") === 0) { u.voice = vozes[i]; break; }
+  }
+  setTimeout(function () { synth.resume(); synth.speak(u); }, 60);
 }
 
 function embaralhar(lista) {
@@ -360,6 +370,7 @@ function bolha(tipo, en, pt) {
 
 function mostrarPassoBot() {
   var passo = cenario.passos[passoAtual];
+  ultimaFala = passo.bot;
   bolha("bot", passo.bot, passo.pt);
   if (vozLigada) falar(passo.bot);
   mostrarOpcoes(passo);
@@ -483,7 +494,9 @@ btnTrad.addEventListener("click", function () {
 btnVoz.addEventListener("click", function () {
   vozLigada = !vozLigada;
   btnVoz.setAttribute("aria-pressed", String(vozLigada));
+  btnVoz.textContent = vozLigada ? "🔊 Voz: ligada" : "🔇 Voz: desligada";
   if (!vozLigada && temVoz) window.speechSynthesis.cancel();
+  if (vozLigada && ultimaFala) falar(ultimaFala);
 });
 $("btnSair").addEventListener("click", sair);
 
