@@ -3,189 +3,226 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Inglês</title>
-<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="ingles.css">
+<title>Inglês do Zero</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
 <style>
-  .player {
-    width: 100%;
-    max-width: 500px;
-    padding: 15px;
-    margin-bottom: 25px;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background: #f7f7f7;
-    box-sizing: border-box;
+  :root { --bg:#070b16; --glass:rgba(255,255,255,.05); --line:rgba(120,200,255,.22); --text:#e8f0ff; --muted:#93a4c4; --c1:#22d3ee; --c2:#8b5cf6; --c3:#f472b6; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: "Atkinson Hyperlegible", system-ui, sans-serif; color: var(--text); line-height: 1.5;
+    background:
+      radial-gradient(600px 400px at 10% -5%, rgba(34,211,238,.20), transparent 70%),
+      radial-gradient(700px 500px at 100% 10%, rgba(139,92,246,.22), transparent 70%),
+      linear-gradient(rgba(120,200,255,.05) 1px, transparent 1px) 0 0/40px 40px,
+      linear-gradient(90deg, rgba(120,200,255,.05) 1px, transparent 1px) 0 0/40px 40px,
+      var(--bg);
+    background-attachment: fixed;
+    padding: env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0);
   }
-  .player .progresso { width: 100%; cursor: pointer; }
-  .player .tempo { text-align: center; margin: 8px 0; font-size: 14px; }
-  .player .botoes, .player .velocidade {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin-top: 8px;
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 20px 16px 48px; }
+  .hero { text-align: center; padding: 36px 0 28px; }
+  .tag { display: inline-block; padding: 4px 14px; border: 1px solid var(--line); border-radius: 99px; color: var(--c1); font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; }
+  h1 { font-family: Orbitron, sans-serif; font-weight: 800; font-size: clamp(2rem, 7vw, 3.6rem); margin: 14px 0 6px; line-height: 1.1;
+       background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .hero p { margin: 0; color: var(--muted); font-size: 1.1rem; }
+
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card {
+    position: relative; padding: 20px; border-radius: 18px; border: 1px solid var(--line);
+    background: var(--glass); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    transition: transform .2s, border-color .2s, box-shadow .2s;
   }
+  .card:hover { transform: translateY(-3px); border-color: var(--c1); box-shadow: 0 0 28px rgba(34,211,238,.18); }
+  .card.wide { grid-column: 1 / -1; }
+  .card.feat { border-color: rgba(139,92,246,.6); box-shadow: 0 0 34px rgba(139,92,246,.18); }
+  .ico { font-size: 1.6rem; }
+  h2 { font-family: Orbitron, sans-serif; font-weight: 600; font-size: 1.05rem; letter-spacing: .04em; margin: 6px 0 4px; }
+  .sub { margin: 0 0 14px; color: var(--muted); font-size: .95rem; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 8px 14px; border-radius: 10px; text-decoration: none; color: var(--text); font-size: .92rem;
+    border: 1px solid var(--line); background: rgba(34,211,238,.08); transition: background .2s, color .2s;
+  }
+  .chip:hover { background: var(--c1); color: #04121a; }
+  .chip.main { background: linear-gradient(90deg, var(--c1), var(--c2)); border: none; color: #04121a; font-weight: 700; }
+  a:focus-visible, button:focus-visible { outline: 3px solid var(--c1); outline-offset: 2px; }
+
+  .players { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .player { padding: 16px; border-radius: 14px; border: 1px solid var(--line); background: rgba(0,0,0,.25); }
+  .player h3 { margin: 0 0 8px; font-size: 1rem; color: var(--c1); }
+  .player .progresso { width: 100%; accent-color: var(--c1); cursor: pointer; }
+  .player .tempo { text-align: center; margin: 6px 0; font-size: .9rem; color: var(--muted); }
+  .player .botoes, .player .velocidade { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
   .player button {
-    padding: 8px 14px;
-    border: none;
-    border-radius: 6px;
-    background: #2d7ff9;
-    color: #fff;
-    font-size: 15px;
-    cursor: pointer;
+    padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); background: rgba(34,211,238,.1);
+    color: var(--text); font: inherit; font-size: .92rem; cursor: pointer;
   }
-  .player button:hover { background: #1b63cc; }
-  .player .vel { min-width: 50px; text-align: center; font-weight: bold; }
+  .player button:hover { background: var(--c1); color: #04121a; }
+  .player .play { background: linear-gradient(90deg, var(--c1), var(--c2)); border: none; color: #04121a; font-weight: 700; }
+  .player .vel { min-width: 54px; text-align: center; font-weight: 700; color: var(--c1); }
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 </style>
 </head>
 <body>
-<header class="top"><div><h1>Inglês do Zero</h1><p class="sub">Escolha por onde começar.</p></div></header>
-<div class="page">
-  <section class="blk">
-    <h2>Lições do zero</h2>
-    <p class="sub">Do "Hello" ao inglês avançado, com voz e quiz.</p>
-    <div class="bar">
-      <a class="btn" href="ingles-do-zero.html#nivel0">Básico</a>
-      <a class="btn" href="ingles-do-zero.html#nivel1">Intermediário</a>
-      <a class="btn" href="ingles-do-zero.html#nivel2">Avançado</a>
-    </div>
-  </section>
-  <section class="blk">
-    <h2>Vocabulário</h2>
-    <p class="sub">Dia a dia, trabalho, reuniões e e-mail, indústria e automação.</p>
-    <div class="bar">
-      <a class="btn alt" href="vocabulario.html#0">Dia a dia</a>
-      <a class="btn alt" href="vocabulario.html#1">Trabalho</a>
-      <a class="btn alt" href="vocabulario.html#2">Reuniões e e-mail</a>
-      <a class="btn alt" href="vocabulario.html#3">Indústria</a>
-    </div>
-  </section>
+<div class="wrap">
+  <header class="hero">
+    <span class="tag">Aprenda no seu ritmo</span>
+    <h1>Inglês do Zero</h1>
+    <p>Escolha por onde começar.</p>
+  </header>
 
-  <section class="blk">
-    <h2>Abreviações e dicas</h2>
-    <p class="sub">wanna, gonna, gotta, kinda, BTW, ASAP e muito mais, com voz e modo treino.</p>
-    <div class="bar"><a class="btn" href="abreviacoes.html">Ver abreviações</a></div>
-  </section>
-
-  <section class="blk">
-    <h2>Frases para ouvir</h2>
-    <p class="sub">Frases prontas com voz e a tradução logo abaixo, por categoria.</p>
-    <div class="bar"><a class="btn" href="mil-frases.html">Abrir frases</a></div>
-  </section>
-  <section class="blk">
-    <h2>Montar frases</h2>
-    <p class="sub">Você digita a frase em inglês e escolhe o tempo verbal.</p>
-    <div class="bar">
-      <a class="btn" href="frases.html#presente">Presente</a>
-      <a class="btn" href="frases.html#passado">Passado</a>
-      <a class="btn" href="frases.html#futuro">Futuro</a>
-      <a class="btn" href="frases.html#misto">Misto</a>
-    </div>
-  </section>
-
-    <section class="blk">
-    <h2>Conversar</h2>
-    <p class="sub">wanna, gonna, gotta, kinda, BTW, ASAP e muito mais, com voz e modo treino.</p>
-    <div class="bar"><a class="btn" href="conversa.html">Iniciar Conversa</a></div>
-  </section>
-
-  <section class="blk">
-    <h2>Aulas em áudio</h2>
-
-    <h3>Aula 1</h3>
-    <audio id="audio1" src="audios/aula1_leve.mp3" preload="metadata"></audio>
-    <div class="player" data-audio="audio1">
-      <input type="range" class="progresso" min="0" max="100" value="0" step="0.1">
-      <div class="tempo"><span class="atual">0:00</span> / <span class="total">0:00</span></div>
-      <div class="botoes">
-        <button class="recuar">⏪ -10s</button>
-        <button class="play">▶ Play</button>
-        <button class="avancar">+10s ⏩</button>
+  <main class="grid">
+    <section class="card feat wide">
+      <div class="ico">🎙️</div>
+    <section class="card">
+      <div class="ico">🚀</div>
+      <h2>LIÇÕES DO ZERO</h2>
+      <p class="sub">Do "Hello" ao inglês avançado, com voz e quiz.</p>
+      <div class="chips">
+        <a class="chip" href="ingles-do-zero.html#nivel0">Básico</a>
+        <a class="chip" href="ingles-do-zero.html#nivel1">Intermediário</a>
+        <a class="chip" href="ingles-do-zero.html#nivel2">Avançado</a>
       </div>
-      <div class="velocidade">
-        <button class="menos">➖</button>
-        <span class="vel">1x</span>
-        <button class="mais">➕</button>
-      </div>
-    </div>
+    </section>
 
-    <h3>Aula 2</h3>
-    <audio id="audio2" src="audios/aula2_leve.mp3" preload="metadata"></audio>
-    <div class="player" data-audio="audio2">
-      <input type="range" class="progresso" min="0" max="100" value="0" step="0.1">
-      <div class="tempo"><span class="atual">0:00</span> / <span class="total">0:00</span></div>
-      <div class="botoes">
-        <button class="recuar">⏪ -10s</button>
-        <button class="play">▶ Play</button>
-        <button class="avancar">+10s ⏩</button>
+    <section class="card">
+      <div class="ico">📚</div>
+      <h2>VOCABULÁRIO</h2>
+      <p class="sub">Dia a dia, trabalho, reuniões e e-mail, indústria e automação.</p>
+      <div class="chips">
+        <a class="chip" href="vocabulario.html#0">Dia a dia</a>
+        <a class="chip" href="vocabulario.html#1">Trabalho</a>
+        <a class="chip" href="vocabulario.html#2">Reuniões e e-mail</a>
+        <a class="chip" href="vocabulario.html#3">Indústria</a>
       </div>
-      <div class="velocidade">
-        <button class="menos">➖</button>
-        <span class="vel">1x</span>
-        <button class="mais">➕</button>
+    </section>
+
+    <section class="card">
+      <div class="ico">⚡</div>
+      <h2>ABREVIAÇÕES E DICAS</h2>
+      <p class="sub">wanna, gonna, gotta, kinda, BTW, ASAP e muito mais, com voz e modo treino.</p>
+      <div class="chips"><a class="chip main" href="abreviacoes.html">Ver abreviações</a></div>
+    </section>
+
+
+     <section class="card">
+      <div class="ico">🧩</div>
+      <h2>MONTAR FRASES</h2>
+      <p class="sub">Você digita a frase em inglês e escolhe o tempo verbal.</p>
+      <div class="chips">
+        <a class="chip" href="frases.html#presente">Presente</a>
+        <a class="chip" href="frases.html#passado">Passado</a>
+        <a class="chip" href="frases.html#futuro">Futuro</a>
+        <a class="chip" href="frases.html#misto">Misto</a>
       </div>
-    </div>
-  </section>
+    </section>
+
+
+    <section class="card">
+      <div class="ico">🔊</div>
+      <h2>FRASES PARA OUVIR</h2>
+      <p class="sub">Frases prontas com voz e a tradução logo abaixo, por categoria.</p>
+      <div class="chips"><a class="chip main" href="mil-frases.html">Abrir frases</a></div>
+    </section>
+
+
+    <h2>CONVERSAR</h2>
+      <p class="sub">Simule diálogos reais: ouça a pergunta e responda clicando ou falando em inglês no microfone.</p>
+      <div class="chips">
+        <a class="chip main" href="conversa.html">Todas as situações</a>
+        <a class="chip" href="conversa.html#0">Restaurante</a>
+        <a class="chip" href="conversa.html#1">Aeroporto</a>
+        <a class="chip" href="conversa.html#2">Conhecendo alguém</a>
+        <a class="chip" href="conversa.html#3">Reunião</a>
+        <a class="chip" href="conversa.html#4">Hotel</a>
+        <a class="chip" href="conversa.html#5">Médico</a>
+        <a class="chip" href="conversa.html#6">Compras</a>
+        <a class="chip" href="conversa.html#7">Direções</a>
+        <a class="chip" href="conversa.html#8">Entrevista</a>
+        <a class="chip" href="conversa.html#9">Máquina parada</a>
+        <a class="chip" href="conversa.html#10">Fornecedor</a>
+        <a class="chip" href="conversa.html#11">Telefone</a>
+      </div>
+    </section>
+
+    <section class="card wide">
+      <div class="ico">🎧</div>
+      <h2>AULAS EM ÁUDIO</h2>
+      <p class="sub">Controle a velocidade e avance ou volte 10 segundos.</p>
+      <div class="players">
+        <div class="player" data-audio="audio1">
+          <h3>Aula 1</h3>
+          <audio id="audio1" src="audios/aula1_leve.mp3" preload="metadata"></audio>
+          <input type="range" class="progresso" min="0" max="100" value="0" step="0.1" aria-label="Progresso da aula 1">
+          <div class="tempo"><span class="atual">0:00</span> / <span class="total">0:00</span></div>
+          <div class="botoes">
+            <button class="recuar">⏪ -10s</button>
+            <button class="play">▶ Play</button>
+            <button class="avancar">+10s ⏩</button>
+          </div>
+          <div class="velocidade">
+            <button class="menos" aria-label="Diminuir velocidade">➖</button>
+            <span class="vel">1x</span>
+            <button class="mais" aria-label="Aumentar velocidade">➕</button>
+          </div>
+        </div>
+        <div class="player" data-audio="audio2">
+          <h3>Aula 2</h3>
+          <audio id="audio2" src="audios/aula2_leve.mp3" preload="metadata"></audio>
+          <input type="range" class="progresso" min="0" max="100" value="0" step="0.1" aria-label="Progresso da aula 2">
+          <div class="tempo"><span class="atual">0:00</span> / <span class="total">0:00</span></div>
+          <div class="botoes">
+            <button class="recuar">⏪ -10s</button>
+            <button class="play">▶ Play</button>
+            <button class="avancar">+10s ⏩</button>
+          </div>
+          <div class="velocidade">
+            <button class="menos" aria-label="Diminuir velocidade">➖</button>
+            <span class="vel">1x</span>
+            <button class="mais" aria-label="Aumentar velocidade">➕</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>
 
 <script>
   function formatar(seg) {
     if (isNaN(seg)) return "0:00";
-    const m = Math.floor(seg / 60);
-    const s = Math.floor(seg % 60).toString().padStart(2, "0");
+    var m = Math.floor(seg / 60), s = Math.floor(seg % 60).toString().padStart(2, "0");
     return m + ":" + s;
   }
+  document.querySelectorAll(".player").forEach(function (p) {
+    var audio = document.getElementById(p.dataset.audio);
+    var q = function (c) { return p.querySelector(c); };
+    var play = q(".play"), barra = q(".progresso"), vel = q(".vel");
 
-  document.querySelectorAll(".player").forEach(function (player) {
-    const audio = document.getElementById(player.dataset.audio);
-    const btnPlay = player.querySelector(".play");
-    const btnRecuar = player.querySelector(".recuar");
-    const btnAvancar = player.querySelector(".avancar");
-    const btnMais = player.querySelector(".mais");
-    const btnMenos = player.querySelector(".menos");
-    const spanVel = player.querySelector(".vel");
-    const barra = player.querySelector(".progresso");
-    const spanAtual = player.querySelector(".atual");
-    const spanTotal = player.querySelector(".total");
-
-    // Play / Pause (pausa os outros áudios ao tocar este)
-    btnPlay.addEventListener("click", function () {
+    play.addEventListener("click", function () {
       if (audio.paused) {
         document.querySelectorAll("audio").forEach(function (a) { if (a !== audio) a.pause(); });
         audio.play();
-      } else {
-        audio.pause();
-      }
+      } else { audio.pause(); }
     });
-    audio.addEventListener("play", function () { btnPlay.textContent = "⏸ Pause"; });
-    audio.addEventListener("pause", function () { btnPlay.textContent = "▶ Play"; });
+    audio.addEventListener("play", function () { play.textContent = "⏸ Pause"; });
+    audio.addEventListener("pause", function () { play.textContent = "▶ Play"; });
 
-    // Recuar / Avançar 10 segundos
-    btnRecuar.addEventListener("click", function () {
-      audio.currentTime = Math.max(0, audio.currentTime - 10);
-    });
-    btnAvancar.addEventListener("click", function () {
-      audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10);
-    });
+    q(".recuar").addEventListener("click", function () { audio.currentTime = Math.max(0, audio.currentTime - 10); });
+    q(".avancar").addEventListener("click", function () { audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + 10); });
 
-    // Velocidade: 0.5x a 3x, de 0.25 em 0.25
-    function mudarVelocidade(delta) {
-      let nova = audio.playbackRate + delta;
-      nova = Math.min(3, Math.max(0.5, nova));
-      audio.playbackRate = nova;
-      spanVel.textContent = parseFloat(nova.toFixed(2)) + "x";
+    function mudar(d) {
+      var n = Math.min(3, Math.max(0.5, audio.playbackRate + d));
+      audio.playbackRate = n;
+      vel.textContent = parseFloat(n.toFixed(2)) + "x";
     }
-    btnMais.addEventListener("click", function () { mudarVelocidade(0.25); });
-    btnMenos.addEventListener("click", function () { mudarVelocidade(-0.25); });
+    q(".mais").addEventListener("click", function () { mudar(0.25); });
+    q(".menos").addEventListener("click", function () { mudar(-0.25); });
 
-    // Barra de progresso e tempo
-    audio.addEventListener("loadedmetadata", function () {
-      spanTotal.textContent = formatar(audio.duration);
-    });
+    audio.addEventListener("loadedmetadata", function () { q(".total").textContent = formatar(audio.duration); });
     audio.addEventListener("timeupdate", function () {
       if (audio.duration) barra.value = (audio.currentTime / audio.duration) * 100;
-      spanAtual.textContent = formatar(audio.currentTime);
+      q(".atual").textContent = formatar(audio.currentTime);
     });
     barra.addEventListener("input", function () {
       if (audio.duration) audio.currentTime = (barra.value / 100) * audio.duration;
