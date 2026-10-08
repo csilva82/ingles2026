@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Abreviações em inglês</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f7fa;--card:#fff;--ink:#14202e;--mute:#5b6b7c;--line:#d8e0e8;--acc:#0a7c86;--accw:#fff;--ok:#1d8a4e;--bad:#c0392b;--hl:#e3f3f4}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1720;--card:#18232f;--ink:#e8eef4;--mute:#9aabbb;--line:#2a3846;--acc:#3cc1cb;--accw:#06232a;--ok:#4cc27f;--bad:#ff7a6b;--hl:#183a40}}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);background:var(--bg);color:var(--ink);font:17px/1.5 "Atkinson Hyperlegible",system-ui,sans-serif}
+.top{max-width:900px;margin:auto;padding:18px 20px 6px;display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.page{max-width:900px;margin:auto;padding:8px 20px 40px}
+h1{margin:0;font-size:1.7rem;letter-spacing:-.02em}
+h2{margin:0 0 4px;font-size:1.4rem}
+.sub{color:var(--mute);margin:0 0 8px;font-size:.95rem}
+button,a{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.tog{display:inline-block;text-decoration:none;border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px}
+.tog[aria-pressed=true]{background:var(--acc);color:var(--accw);border-color:var(--acc)}
+.btn{display:inline-block;text-decoration:none;border:2px solid var(--acc);background:var(--acc);color:var(--accw);padding:12px 20px;border-radius:10px;font-weight:700}
+.btn.alt{background:none;color:var(--acc)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
+.row{display:flex;align-items:center;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.sp{flex:none;width:46px;height:46px;border-radius:50%;border:2px solid var(--acc);background:none;color:var(--acc);font-size:1.1rem}
+.sp:hover{background:var(--acc);color:var(--accw)}
+.en{font-size:1.3rem;font-weight:700}
+.pt{color:var(--mute);font-size:.95rem}
+.pr{color:var(--acc);font-size:.95rem}
+.lnk{border:0;background:none;color:var(--acc);text-decoration:underline;padding:0}
+.tip{background:var(--hl);border-left:4px solid var(--acc);padding:10px 14px;margin:14px 0;border-radius:0 8px 8px 0;font-size:.95rem}
+.blk{border-left:6px solid var(--acc);padding:4px 0 4px 18px;margin:30px 0}
+.big{font-size:2rem;font-weight:700;margin:14px 0}
+input[type=text]{width:100%;font:inherit;font-size:1.15rem;padding:14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.fb{margin:14px 0;font-weight:700;min-height:1.5em}
+</style>
+<style>.sh{font-size:1.5rem;font-weight:700;color:var(--acc)}.eq{font-size:1.05rem}</style>
+</head>
+<body>
+<header class="top">
+  <div><h1>Abreviações em inglês</h1><p class="sub">Como os nativos realmente falam e escrevem.</p></div>
+  <div class="bar"><a class="tog" href="index.html">← Início</a><button class="tog" id="slow" aria-pressed="false">🐢 Voz lenta</button></div>
+</header>
+<div class="page"><div class="card">
+  <div id="tips"></div>
+  <input type="text" id="q" placeholder="Buscar (ex.: wanna, ASAP, querer)" aria-label="Buscar" autocomplete="off">
+  <div class="bar" id="cats"></div>
+  <div class="bar"><button class="tog" id="tr" aria-pressed="false">🎯 Modo treino (esconder significado)</button></div>
+  <div id="list"></div>
+</div></div>
+<script>
+const $=s=>document.querySelector(s);
+const shuf=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+let slow=false,voices=[];
+const TTS='speechSynthesis' in window;
+if(TTS){const l=()=>{voices=speechSynthesis.getVoices().filter(v=>v.lang.startsWith('en'))};l();speechSynthesis.onvoiceschanged=l}
+function say(t){
+  if(!TTS){alert('Seu navegador não tem voz. Tente o Chrome ou o Safari.');return}
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=slow?.55:.9;
+  const v=voices.find(v=>v.lang==='en-US')||voices[0];if(v)u.voice=v;
+  speechSynthesis.speak(u);
+}
+const sl=$('#slow');
+if(sl)sl.onclick=()=>{slow=!slow;sl.setAttribute('aria-pressed',slow)};
+</script>
+<script>
+const TIPS=[
+'Estas formas são para a <b>fala</b> e mensagens informais. Em e-mails e textos formais, escreva a forma completa.',
+'O som "some": em <b>want to</b> o "to" vira um "tâ" fraco e gruda no verbo, por isso soa <b>wanna</b>. Imite o ritmo da frase, não palavra por palavra.',
+'<b>\'s</b> pode ser <i>is</i> ou <i>has</i>: <i>it\'s raining</i> (is) e <i>it\'s been</i> (has).',
+'<b>ain\'t</b> é informal e não padrão. Entenda, mas evite em provas e textos formais.',
+'Seu primeiro objetivo é <b>reconhecer</b> estas formas ao ouvir (filmes, séries, músicas). Usar na fala vem depois, e só em situações informais.',
+'Para treinar: diga a frase devagar com a forma completa e acelere aos poucos até soar como a curta.',
+'Siglas como <b>FYI</b> e <b>BTW</b> são lidas letra por letra. Outras, como <b>ASAP</b>, podem ser lidas letra por letra ou como palavra ("êi-sap").'
+];
+// [forma curta, forma completa, significado, exemplo EN, exemplo PT]
+const C=[
+{t:'Fala',i:[
+['wanna','want to','querer (fazer algo)','I wanna go home.','Eu quero ir para casa.'],
+['gonna','going to','ir fazer (futuro)','I\'m gonna call you later.','Eu vou ligar para você mais tarde.'],
+['gotta','got to / have to','ter que','I gotta go.','Eu tenho que ir.'],
+['kinda','kind of','meio / mais ou menos','It\'s kinda cold today.','Está meio frio hoje.'],
+['sorta','sort of','meio / um pouco','I\'m sorta tired.','Estou meio cansado.'],
+['hafta','have to','ter que','I hafta work tomorrow.','Eu tenho que trabalhar amanhã.'],
+['gimme','give me','me dá','Gimme a minute.','Me dá um minuto.'],
+['lemme','let me','deixa eu','Lemme check.','Deixa eu verificar.'],
+['dunno','don\'t know','não sei','I dunno.','Não sei.'],
+['outta','out of','fora de / sem','We\'re outta time.','Estamos sem tempo.'],
+['lotta','a lot of','muito(s)','That\'s a lotta work.','Isso é muito trabalho.'],
+['shoulda','should have','deveria ter','I shoulda called you.','Eu deveria ter ligado para você.'],
+['coulda','could have','poderia ter','I coulda won.','Eu poderia ter vencido.'],
+['woulda','would have','teria','I woulda helped you.','Eu teria ajudado você.'],
+['whatcha','what are you','o que você está...','Whatcha doing?','O que você está fazendo?'],
+['gotcha','got you','entendi / peguei você','Gotcha, thanks.','Entendi, obrigado.'],
+['tryna','trying to','tentando (muito informal)','I\'m tryna sleep.','Estou tentando dormir.'],
+['c\'mon','come on','vamos lá!','C\'mon, let\'s go!','Vamos lá, bora!'],
+['\'cause','because','porque','I\'m late \'cause of traffic.','Estou atrasado por causa do trânsito.'],
+['y\'all','you all','vocês (sul dos EUA)','Are y\'all ready?','Vocês estão prontos?'],
+['ain\'t','am not / is not / are not','não (informal)','That ain\'t right.','Isso não está certo.'],
+['ya','you','você','See ya later!','Te vejo mais tarde!'],
+['d\'you','do you','você...? (pergunta)','D\'you want some coffee?','Você quer café?']]},
+{t:'Contrações',i:[
+['I\'m','I am','eu sou / estou','I\'m ready.','Eu estou pronto.'],
+['you\'re','you are','você é / está','You\'re right.','Você tem razão.'],
+['it\'s','it is / it has','é / está / tem','It\'s late.','Está tarde.'],
+['we\'re','we are','nós somos / estamos','We\'re here.','Nós estamos aqui.'],
+['they\'re','they are','eles são / estão','They\'re busy.','Eles estão ocupados.'],
+['don\'t','do not','não (I, you, we, they)','I don\'t know.','Eu não sei.'],
+['doesn\'t','does not','não (he, she, it)','She doesn\'t like tea.','Ela não gosta de chá.'],
+['didn\'t','did not','não (passado)','I didn\'t see him.','Eu não o vi.'],
+['can\'t','cannot','não consigo / não posso','I can\'t hear you.','Não consigo ouvir você.'],
+['won\'t','will not','não vou','I won\'t be late.','Eu não vou me atrasar.'],
+['I\'ll','I will','eu vou','I\'ll help you.','Eu vou ajudar você.'],
+['I\'ve','I have','eu tenho / já','I\'ve finished.','Eu já terminei.'],
+['I\'d','I would / I had','eu gostaria / eu tinha','I\'d like some water.','Eu gostaria de água.'],
+['let\'s','let us','vamos','Let\'s start.','Vamos começar.'],
+['isn\'t','is not','não é / não está','It isn\'t ready.','Não está pronto.']]},
+{t:'Chat e e-mail',i:[
+['BTW','by the way','a propósito','BTW, I\'ll be late.','A propósito, vou me atrasar.'],
+['FYI','for your information','para sua informação','FYI, the meeting moved.','Para sua informação, a reunião mudou.'],
+['ASAP','as soon as possible','o mais rápido possível','Please reply ASAP.','Responda o mais rápido possível.'],
+['IDK','I don\'t know','não sei','IDK what to say.','Não sei o que dizer.'],
+['TBH','to be honest','para ser honesto','TBH, I liked it.','Para ser honesto, eu gostei.'],
+['IMO','in my opinion','na minha opinião','IMO, it\'s too expensive.','Na minha opinião, é caro demais.'],
+['BRB','be right back','já volto','BRB, one minute.','Já volto, um minuto.'],
+['LOL','laughing out loud','rindo muito (haha)','LOL, that\'s funny!','Haha, que engraçado!'],
+['OMG','oh my god','nossa!','OMG, I won!','Nossa, eu ganhei!'],
+['thx','thanks','obrigado','Thx for your help!','Valeu pela ajuda!'],
+['pls','please','por favor','Pls send it today.','Por favor, envie hoje.'],
+['NP','no problem','sem problema','NP, happy to help.','Sem problema, feliz em ajudar.'],
+['TL;DR','too long; didn\'t read','resumindo','TL;DR: we\'re late.','Resumindo: estamos atrasados.'],
+['ETA','estimated time of arrival','previsão de chegada','What\'s your ETA?','Qual é a sua previsão de chegada?'],
+['DM','direct message','mensagem privada','Send me a DM.','Me mande uma mensagem privada.']]},
+{t:'Trabalho',i:[
+['EOD','end of day','até o fim do dia','Send it by EOD.','Envie até o fim do dia.'],
+['OOO','out of office','fora do escritório','I\'m OOO until Monday.','Estou fora do escritório até segunda.'],
+['PTO','paid time off','folga ou férias remuneradas','I\'m taking PTO next week.','Vou tirar folga na semana que vem.'],
+['TBD','to be determined','a definir','The date is TBD.','A data está a definir.'],
+['N/A','not applicable','não se aplica','Bonus: N/A.','Bônus: não se aplica.'],
+['WIP','work in progress','em andamento','This report is a WIP.','Este relatório está em andamento.'],
+['SOP','standard operating procedure','procedimento operacional padrão','Follow the SOP.','Siga o procedimento padrão.'],
+['KPI','key performance indicator','indicador de desempenho','We track three KPIs.','Acompanhamos três indicadores.'],
+['ROI','return on investment','retorno sobre o investimento','The ROI is high.','O retorno é alto.'],
+['Q&A','questions and answers','perguntas e respostas','We have a Q&A at the end.','Teremos perguntas e respostas no final.'],
+['CC','carbon copy','cópia de e-mail','I\'ll CC my manager.','Vou colocar meu gerente em cópia.'],
+['RSVP','please reply','confirme presença','Please RSVP by Friday.','Confirme presença até sexta.'],
+['HR','human resources','recursos humanos','Talk to HR.','Fale com o RH.'],
+['PLC','programmable logic controller','CLP','The PLC controls the robot.','O CLP controla o robô.'],
+['CNC','computer numerical control','controle numérico computadorizado','The CNC lathe is ready.','O torno CNC está pronto.']]},
+{t:'Reduções ligadas',i:[
+['didja','did you','você...? (passado)','Didja eat yet?','Você já comeu?'],
+['wouldja','would you','você poderia / você...?','Wouldja help me?','Você me ajudaria?'],
+['couldja','could you','você poderia','Couldja repeat that?','Você poderia repetir?'],
+['whaddya','what do you','o que você','Whaddya want?','O que você quer?'],
+['howdya','how do you','como você','Howdya know?','Como você sabe?'],
+['wantcha','want you','quero que você','I wantcha to see this.','Quero que você veja isto.'],
+['getcha','get you','pegar para você','I\'ll getcha some water.','Vou pegar água para você.'],
+['betcha','bet you','aposto que você','Betcha can\'t do it.','Aposto que você não consegue.'],
+['kinda wanna','kind of want to','meio que quero','I kinda wanna sleep.','Eu meio que quero dormir.'],
+['innit','isn\'t it (britânico)','não é? / né?','Nice day, innit?','Belo dia, né?'],
+['cuppa','cup of','xícara de','A cuppa tea, please.','Uma xícara de chá, por favor.']]},
+{t:'Expressões curtas',i:[
+['my bad','it was my fault','foi mal / foi culpa minha','My bad, sorry!','Foi mal, desculpa!'],
+['for sure','definitely','com certeza','Are you coming? For sure!','Você vem? Com certeza!'],
+['no biggie','it\'s not a big deal','não foi nada','It\'s no biggie.','Não foi nada.'],
+['no worries','it\'s okay','tudo bem / sem problema','No worries at all.','Tudo bem, sem problema.'],
+['hang on','wait a moment','espere um pouco','Hang on, I\'m coming.','Espere, já vou.'],
+['I\'m good','no, thank you / I\'m fine','estou bem / não precisa','More coffee? I\'m good, thanks.','Mais café? Estou bem, obrigado.'],
+['you bet','of course / you\'re welcome','pode apostar / de nada','Thanks! You bet.','Obrigado! De nada.'],
+['what\'s up?','how are you? / what\'s new?','e aí?','Hey, what\'s up?','E aí?'],
+['how come?','why?','como assim? / por quê?','How come you\'re late?','Como assim você está atrasado?'],
+['I guess','I suppose','acho que sim','I guess you\'re right.','Acho que você tem razão.'],
+['take it easy','relax / goodbye','vai com calma / até logo','See you. Take it easy!','Até logo. Vai com calma!'],
+['heads up','a warning','aviso / fica ligado','Just a heads up: it\'s raining.','Só um aviso: está chovendo.'],
+['I\'m in','I\'ll join','eu topo','Dinner tonight? I\'m in.','Jantar hoje? Eu topo.'],
+['sounds good','I agree / okay','parece bom','Friday? Sounds good.','Sexta? Parece bom.'],
+['catch you later','see you later','te vejo depois','Bye! Catch you later.','Tchau! Te vejo depois.']]},
+{t:'Sons que mudam',p:1,i:[
+['water','wô-dâr','O T entre vogais soa como um D rápido.','I need some water.','Preciso de água.'],
+['butter','bâ-dâr','Mesmo efeito: T entre vogais vira D leve.','Pass the butter.','Passe a manteiga.'],
+['better','bé-dâr','O T também vira D leve aqui.','This is better.','Isto é melhor.'],
+['city','si-di','O T do meio soa como D.','I live in the city.','Eu moro na cidade.'],
+['to','tâ','To é fraco na frase: "tâ", não "tu".','I want to go.','Eu quero ir.'],
+['of','âv','Of é fraco: perto de "âv".','A cup of coffee.','Uma xícara de café.'],
+['and','n','And vira um "n" fraco no meio da frase.','Bread and butter.','Pão e manteiga.'],
+['can','kân (fraco)','Can fica fraco na frase, quase "kn".','I can help you.','Eu posso ajudar você.'],
+['can\'t','kén(t) (forte)','Can\'t tem vogal forte e o T quase some.','I can\'t go.','Eu não posso ir.'],
+['next day','nék-s dêi','O T entre consoantes costuma sumir.','See you the next day.','Te vejo no dia seguinte.']]}
+];
+let cat=0,term='',train=false,shown={};
+const fold=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+$('#tips').innerHTML=TIPS.map(t=>`<div class="tip">${t}</div>`).join('');
+function view(){
+  $('#cats').innerHTML=C.map((c,k)=>`<button class="tog" data-c="${k}" aria-pressed="${k===cat}">${c.t} (${c.i.length})</button>`).join('');
+  const f=C[cat].i.map((x,k)=>({x,k})).filter(o=>!term||fold(o.x.join(' ')).includes(term));
+  $('#list').innerHTML=f.length?f.map(({x,k})=>{
+    const hide=train&&!shown[cat+'-'+k];
+    return `<div class="row"><button class="sp" data-e="${k}" aria-label="Ouvir exemplo">🔊</button><div style="flex:1">
+    <button class="sh lnk" data-s="${k}" style="text-decoration:none;text-align:left" aria-label="Ouvir ${x[0]}">${x[0]} 🔈</button>
+    ${hide?`<button class="lnk" data-r="${k}">Mostrar significado</button>`:
+    `<div class="eq">${C[cat].p?'soa como':'='} ${x[1]} ${C[cat].p?'':`<button class="lnk" data-f="${k}">ouvir completo</button>`}</div><div class="pt">${x[2]}</div><div class="en" style="font-size:1.05rem">${x[3]}</div><div class="pt">${x[4]}</div>`}
+    </div></div>`}).join(''):'<p class="sub">Nada encontrado.</p>';
+}
+$('#q').oninput=e=>{term=fold(e.target.value.trim());view()};
+$('#tr').onclick=e=>{train=!train;shown={};e.currentTarget.setAttribute('aria-pressed',train);view()};
+document.onclick=e=>{
+  const b=e.target.closest('button');if(!b)return;const d=b.dataset,L=C[cat].i;
+  if(d.c!==undefined){cat=+d.c;shown={};view()}
+  else if(d.e!==undefined)say(L[d.e][3]);
+  else if(d.s!==undefined)say(L[d.s][0]);
+  else if(d.f!==undefined){const s=L[d.f][0].replace(/[.*+?^${}()|[\]\\]/g,'\\$&');say(L[d.f][3].replace(new RegExp(s,'i'),L[d.f][1].split(' / ')[0]))}
+  else if(d.r!==undefined){shown[cat+'-'+d.r]=1;view()}
+};
+view();
+</script>
+</body>
+</html>
